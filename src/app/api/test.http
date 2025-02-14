@@ -1,0 +1,15 @@
+### Create a new car
+POST http://localhost:3000/api/cars
+Content-Type: application/json
+
+{
+  "name": "Toyota Camry",
+  "year": 2022,
+  "price": 15000000,
+  "mileage": 20000,
+  "fuelType": "Petrol",
+  "transmission": "Automatic",
+  "status": "New",
+  "imageUrl": "https://example.com/toyota-camry.jpg"
+}
+

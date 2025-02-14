@@ -4,8 +4,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PurpleDove Client Portal",
-  description: "Overview your ERP System",
+  title: "Car Dealership",
+  description: "Car dealership in lagos nigeria",
 };
 
 const inter = Inter({ subsets: ["latin"] });
