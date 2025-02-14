@@ -77,27 +77,27 @@
 // export async function GET(request: NextRequest) {
 //     try {
 //       const { searchParams } = new URL(request.url);
-  
+
 //       const filters: Record<string, any> = {};
-  
+
 //       const minPrice = searchParams.get('minPrice');
 //       const maxPrice = searchParams.get('maxPrice');
 //       const make = searchParams.get('make');
 //       const model = searchParams.get('model');
 //       const year = searchParams.get('year');
-  
+
 //       if (minPrice || maxPrice) {
 //         filters.price = {};
 //         if (minPrice) filters.price.$gte = parseInt(minPrice);
 //         if (maxPrice) filters.price.$lte = parseInt(maxPrice);
 //       }
-  
+
 //       if (make) filters.make = make;
 //       if (model) filters.model = model;
 //       if (year) filters.year = parseInt(year);
-  
+
 //       const cars = await Car.find(filters)
-  
+
 //       return NextResponse.json(cars, { status: 200 });
 //     } catch (error) {
 //       console.error("Error fetching cars:", error);
@@ -105,65 +105,58 @@
 //     }
 //   }
 
-
-
-
+import connectMongoDB from "@/lib/mongodb";
 import Car from "@/models/car";
 import { ICar } from "@/types/car";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    
-    // Get all the car data from the form
-    const name = formData.get('name') as string;
-    const year = formData.get('year') as string;
-    const price = formData.get('price') as string;
-    const mileage = formData.get('mileage') as string;
-    const make = formData.get('make') as string;
-    const model = formData.get('model') as string;
-    
-    // Get the image files
-    const images: string[] = [];
-    formData.getAll('images').forEach((file) => {
-      if (file instanceof File) {
-        // Store the file name or URL - depends on your storage solution
-        images.push(file.name);
-      }
-    });
+    await connectMongoDB();
+    const {
+      name,
+      make,
+      model,
+      year,
+      price,
+      mileage,
+      fuelType,
+      transmission,
+      status,
+      images,
+    } = await req.json();
 
-    // Validate required fields
-    if (!name || !year || !price || !mileage) {
+    // Ensure images are provided as URLs
+    if (!images || images.length === 0) {
       return NextResponse.json(
-        { error: "Missing required fields" }, 
+        { error: "Images are required" },
         { status: 400 }
       );
     }
 
-    // Create car object with proper typing
-    const carBody: Partial<ICar> = {
+    const newCar = new Car({
       name,
-      year: parseInt(year),
-      price: parseFloat(price),
-      mileage: parseInt(mileage),
       make,
       model,
-      images
-    };
+      year,
+      price,
+      mileage,
+      fuelType,
+      transmission,
+      status,
+      images, // Store Cloudinary URLs in MongoDB
+    });
 
-    // Create and save the new car
-    const newCar = new Car(carBody);
     await newCar.save();
 
     return NextResponse.json(
-      { message: "Car created successfully", car: newCar }, 
+      { message: "Car created successfully", car: newCar },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating car:", error);
+    console.error("Error saving car:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" }, 
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
@@ -175,8 +168,8 @@ export async function GET(request: NextRequest) {
     const filters: Record<string, any> = {};
 
     // Handle price range
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
     if (minPrice || maxPrice) {
       filters.price = {};
       if (minPrice) filters.price.$gte = parseInt(minPrice);
@@ -184,11 +177,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Handle other filters
-    const make = searchParams.get('make');
-    const model = searchParams.get('model');
-    const year = searchParams.get('year');
-    const minMileage = searchParams.get('minMileage');
-    const maxMileage = searchParams.get('maxMileage');
+    const make = searchParams.get("make");
+    const model = searchParams.get("model");
+    const year = searchParams.get("year");
+    const minMileage = searchParams.get("minMileage");
+    const maxMileage = searchParams.get("maxMileage");
 
     if (make) filters.make = make;
     if (model) filters.model = model;
@@ -203,13 +196,13 @@ export async function GET(request: NextRequest) {
 
     const cars = await Car.find(filters)
       .sort({ createdAt: -1 }) // Optional: sort by newest first
-      .select('-__v'); // Optional: exclude version key
+      .select("-__v"); // Optional: exclude version key
 
     return NextResponse.json(cars, { status: 200 });
   } catch (error) {
     console.error("Error fetching cars:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" }, 
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
