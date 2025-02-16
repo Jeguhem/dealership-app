@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/provider";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Car Dealership",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <main>{children}</main>
           <div id="modal-root"></div>
+          <Toaster />
         </Providers>
       </body>
     </html>

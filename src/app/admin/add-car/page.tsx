@@ -3,6 +3,8 @@
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { Input } from "@/components/ui/input";
 // import { Button } from "@/components/ui/button";
+// import { useToast } from "@/components/hooks/use-toast";
+// import { ToastAction } from "@/components/ui/toast";
 // import {
 //   Select,
 //   SelectContent,
@@ -24,7 +26,10 @@
 //   fuelType: string;
 //   transmission: string;
 //   status: string;
-//   images: File[];
+//   drivetrain: string; // New field
+//   condition: string; // New field
+//   extras: string; // New field
+//   images: string[]; // Store Cloudinary URLs
 // }
 
 // const AddCarPage: React.FC = () => {
@@ -38,10 +43,16 @@
 //     fuelType: "",
 //     transmission: "",
 //     status: "",
+//     drivetrain: "", // Initialize new field
+//     condition: "", // Initialize new field
+//     extras: "", // Initialize new field
 //     images: [],
 //   });
+
+//   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 //   const [error, setError] = useState<string>("");
 //   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const { toast } = useToast();
 
 //   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     const { name, value } = e.target;
@@ -53,18 +64,63 @@
 //   };
 
 //   const handleImageChange = (files: File[]) => {
-//     setFormData((prev) => ({ ...prev, images: files }));
+//     setSelectedFiles(files);
+//   };
+
+//   const uploadImagesToCloudinary = async (files: File[]) => {
+//     const cloudinaryUrls: string[] = [];
+
+//     for (const file of files) {
+//       const formData = new FormData();
+//       formData.append("file", file);
+//       formData.append("upload_preset", "car inventory");
+
+//       try {
+//         const res = await fetch(
+//           `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+//           {
+//             method: "POST",
+//             body: formData,
+//           }
+//         );
+
+//         const data = await res.json();
+//         if (data.secure_url) {
+//           cloudinaryUrls.push(data.secure_url);
+//         }
+//       } catch (error) {
+//         console.error("Cloudinary upload failed:", error);
+//       }
+//     }
+
+//     return cloudinaryUrls;
 //   };
 
 //   const handleSubmit = async (e: React.FormEvent) => {
 //     e.preventDefault();
-//     setError("");
 //     setIsSubmitting(true);
 
 //     try {
-//       // Here you would typically send the data to your API
-//       console.log("Form Data:", formData);
-//       // Reset form after successful submission
+//       // Upload images first
+//       const uploadedUrls = await uploadImagesToCloudinary(selectedFiles);
+//       const updatedFormData = { ...formData, images: uploadedUrls };
+
+//       const response = await fetch("/api/cars", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(updatedFormData),
+//       });
+
+//       if (!response.ok) throw new Error("Failed to add car");
+
+//       toast({
+//         variant: "success",
+//         title: "success",
+//         description: "Car added successfully!",
+//         // action: <ToastAction altText="Try again">Try again</ToastAction>,
+//       });
+
+//       // Reset form
 //       setFormData({
 //         name: "",
 //         make: "",
@@ -75,10 +131,15 @@
 //         fuelType: "",
 //         transmission: "",
 //         status: "",
+//         drivetrain: "", // Reset new field
+//         condition: "", // Reset new field
+//         extras: "", // Reset new field
 //         images: [],
 //       });
+//       setSelectedFiles([]);
 //     } catch (err) {
-//       setError("Failed to add car. Please try again.");
+//       console.error("Error:", err);
+//       alert("Failed to add car. Try again.");
 //     } finally {
 //       setIsSubmitting(false);
 //     }
@@ -93,8 +154,8 @@
 //           </CardHeader>
 //           <CardContent>
 //             <form onSubmit={handleSubmit} className="space-y-6">
-//               {/* Basic Information */}
 //               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 {/* Existing Fields */}
 //                 <div className="space-y-2">
 //                   <label className="text-sm font-medium">Make</label>
 //                   <Input
@@ -202,14 +263,64 @@
 //                     }
 //                   >
 //                     <SelectTrigger>
-//                       <SelectValue placeholder="Select status" />
+//                       <SelectValue placeholder="Select initial status" />
 //                     </SelectTrigger>
 //                     <SelectContent>
 //                       <SelectItem value="New">New</SelectItem>
-//                       <SelectItem value="Used">Used</SelectItem>
+//                       <SelectItem value="Available">Available</SelectItem>
 //                       <SelectItem value="Sold">Sold</SelectItem>
 //                     </SelectContent>
 //                   </Select>
+//                 </div>
+
+//                 {/* New Fields */}
+//                 <div className="space-y-2">
+//                   <label className="text-sm font-medium">Drivetrain</label>
+//                   <Select
+//                     value={formData.drivetrain}
+//                     onValueChange={(value) =>
+//                       handleSelectChange("drivetrain", value)
+//                     }
+//                   >
+//                     <SelectTrigger>
+//                       <SelectValue placeholder="Select drivetrain" />
+//                     </SelectTrigger>
+//                     <SelectContent>
+//                       <SelectItem value="AWD">AWD</SelectItem>
+//                       <SelectItem value="FWD">FWD</SelectItem>
+//                       <SelectItem value="RWD">RWD</SelectItem>
+//                       <SelectItem value="4WD">4WD</SelectItem>
+//                     </SelectContent>
+//                   </Select>
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="text-sm font-medium">Condition</label>
+//                   <Select
+//                     value={formData.condition}
+//                     onValueChange={(value) =>
+//                       handleSelectChange("condition", value)
+//                     }
+//                   >
+//                     <SelectTrigger>
+//                       <SelectValue placeholder="Select condition" />
+//                     </SelectTrigger>
+//                     <SelectContent>
+//                       <SelectItem value="Brand New">Brand New</SelectItem>
+//                       <SelectItem value="Foreign Used">Foreign Used</SelectItem>
+//                       <SelectItem value="Local Used">Local Used</SelectItem>
+//                     </SelectContent>
+//                   </Select>
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="text-sm font-medium">Extras</label>
+//                   <Input
+//                     name="extras"
+//                     value={formData.extras}
+//                     onChange={handleInputChange}
+//                     placeholder="e.g., Panoramic Roof, 360 Camera, etc."
+//                   />
 //                 </div>
 //               </div>
 
@@ -265,6 +376,15 @@ import {
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ImageUploader from "@/components/uploadImages";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface CarFormData {
   name: string;
@@ -276,7 +396,10 @@ interface CarFormData {
   fuelType: string;
   transmission: string;
   status: string;
-  images: string[]; // Store Cloudinary URLs
+  drivetrain: string;
+  condition: string;
+  extras: string;
+  images: string[];
 }
 
 const AddCarPage: React.FC = () => {
@@ -290,12 +413,17 @@ const AddCarPage: React.FC = () => {
     fuelType: "",
     transmission: "",
     status: "",
+    drivetrain: "",
+    condition: "",
+    extras: "",
     images: [],
   });
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const router = useRouter(); // Router for navigation
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -356,28 +484,40 @@ const AddCarPage: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to add car");
 
-      alert("Car added successfully!");
-
-      // Reset form
-      setFormData({
-        name: "",
-        make: "",
-        model: "",
-        year: "",
-        price: "",
-        mileage: "",
-        fuelType: "",
-        transmission: "",
-        status: "",
-        images: [],
-      });
-      setSelectedFiles([]);
+      // Open the modal on success
+      setIsModalOpen(true);
     } catch (err) {
       console.error("Error:", err);
-      alert("Failed to add car. Try again.");
+      setError("Failed to add car. Try again.");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAddAnotherCar = () => {
+    // Clear the form and close the modal
+    setFormData({
+      name: "",
+      make: "",
+      model: "",
+      year: "",
+      price: "",
+      mileage: "",
+      fuelType: "",
+      transmission: "",
+      status: "",
+      drivetrain: "",
+      condition: "",
+      extras: "",
+      images: [],
+    });
+    setSelectedFiles([]);
+    setIsModalOpen(false);
+  };
+
+  const handleGoToDashboard = () => {
+    // Redirect to the dashboard
+    router.push("/admin/dashboard");
   };
 
   return (
@@ -390,6 +530,7 @@ const AddCarPage: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Existing Fields */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Make</label>
                   <Input
@@ -506,6 +647,56 @@ const AddCarPage: React.FC = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* New Fields */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Drivetrain</label>
+                  <Select
+                    value={formData.drivetrain}
+                    onValueChange={(value) =>
+                      handleSelectChange("drivetrain", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select drivetrain" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AWD">AWD</SelectItem>
+                      <SelectItem value="FWD">FWD</SelectItem>
+                      <SelectItem value="RWD">RWD</SelectItem>
+                      <SelectItem value="4WD">4WD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Condition</label>
+                  <Select
+                    value={formData.condition}
+                    onValueChange={(value) =>
+                      handleSelectChange("condition", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Brand New">Brand New</SelectItem>
+                      <SelectItem value="Foreign Used">Foreign Used</SelectItem>
+                      <SelectItem value="Local Used">Local Used</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Extras</label>
+                  <Input
+                    name="extras"
+                    value={formData.extras}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Panoramic Roof, 360 Camera, etc."
+                  />
+                </div>
               </div>
 
               {/* Image Uploader */}
@@ -539,6 +730,22 @@ const AddCarPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Car Added Successfully!</DialogTitle>
+            <DialogDescription>
+              What would you like to do next?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleAddAnotherCar}>Add Another Car</Button>
+            <Button onClick={handleGoToDashboard}>Go to Dashboard</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
