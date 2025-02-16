@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
     const {
-      name,
       make,
       model,
       year,
@@ -17,6 +16,9 @@ export async function POST(req: NextRequest) {
       transmission,
       status = "Available",
       images,
+      condition,     // Added field
+      drivetrain,    // Added field
+      extras,        // Added field
     } = await req.json();
 
     // Ensure images are provided as URLs
@@ -27,8 +29,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate drivetrain (optional)
+    if (drivetrain && !["4WD", "AWD", "FWD", "RWD"].includes(drivetrain)) {
+      return NextResponse.json(
+        { error: "Invalid drivetrain type" },
+        { status: 400 }
+      );
+    }
+
     const newCar: ICar = new Car({
-      // name,
       make,
       model,
       year,
@@ -37,7 +46,10 @@ export async function POST(req: NextRequest) {
       fuelType,
       transmission,
       status,
-      images, // Store Cloudinary URLs in MongoDB
+      images,
+      condition,     // Added field
+      drivetrain,    // Added field
+      extras,        // Added field
     });
 
     await newCar.save();

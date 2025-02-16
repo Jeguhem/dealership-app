@@ -24,6 +24,19 @@ const CarSchema: Schema = new Schema(
           message: "A car can have a maximum of 20 images.",
         },
       },
+      condition: {
+        type: String,
+        required: true
+      },
+      drivetrain: {
+        type: String,
+        enum: ["4WD", "AWD", "FWD", "RWD"],
+        required: true
+      },
+      extras: {
+        type: String,
+        required: false  // Optional field
+      }
     },
     { timestamps: true }
   );
