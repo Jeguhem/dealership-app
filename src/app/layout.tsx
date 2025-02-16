@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/provider";
 
 export const metadata: Metadata = {
   title: "Car Dealership",
@@ -20,8 +21,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className={inter.className}>
-        <main>{children}</main>
-        <div id="modal-root"></div>
+        <Providers>
+          <main>{children}</main>
+          <div id="modal-root"></div>
+        </Providers>
       </body>
     </html>
   );

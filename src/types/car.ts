@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export interface ICar extends mongoose.Document {
-    name: string;
+    // name: string;
     make: string;
     model: string;
     year: number;
