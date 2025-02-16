@@ -3,13 +3,19 @@ POST http://localhost:3000/api/cars
 Content-Type: application/json
 
 {
-  "name": "Toyota Camry",
+    "name":"Toyota Camry",
+  "make": "Toyota",
+  "model": " Camry",
   "year": 2022,
   "price": 15000000,
   "mileage": 20000,
   "fuelType": "Petrol",
   "transmission": "Automatic",
   "status": "New",
-  "imageUrl": "https://example.com/toyota-camry.jpg"
+  "imageUrl": ["https://example.com/toyota-camry.jpg"]
 }
 
+
+###
+
+GET http://localhost:3000/api/cars
