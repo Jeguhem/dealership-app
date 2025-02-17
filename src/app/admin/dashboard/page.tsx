@@ -1,12 +1,243 @@
+// "use client";
+// import React, { useState } from "react";
+// import { Fuel, Settings, Calendar, Gauge } from "lucide-react";
+// import Image from "next/image";
+// import CarSearch from "@/components/searchCar";
+// import { FormDropDown } from "@/components/Dropdown";
+// import { useRouter } from "next/navigation";
+
+// interface Car {
+//   _id: string;
+//   name: string;
+//   year: number;
+//   price: number;
+//   mileage: number;
+//   fuelType: string;
+//   transmission: string;
+//   images: string[];
+//   status?: "New" | "Sold";
+// }
+
+// interface CarCardProps {
+//   car: Car;
+// }
+
+// const CarCard: React.FC<CarCardProps> = ({ car }) => {
+//   const router = useRouter();
+
+//   const handleViewDetails = () => {
+//     router.push(`dashboard/${car._id}`);
+//   };
+//   return (
+//     <div className="bg-white border relative rounded-lg shadow-md overflow-hidden">
+//       {car.status && (
+//         <span
+//           className={`absolute top-2 right-2 z-10 px-2 py-1 rounded-full text-xs font-semibold ${
+//             car.status === "New"
+//               ? "bg-green-100 text-green-800"
+//               : "bg-red-100 text-red-800"
+//           }`}
+//         >
+//           {car.status}
+//         </span>
+//       )}
+
+//       <div className="relative h-24 sm:h-40 overflow-hidden">
+//         <Image
+//           src={car.images[0] || "/placeholder.jpg"}
+//           alt={car.name}
+//           width={250}
+//           height={150}
+//           className="w-full h-full object-cover"
+//         />
+//       </div>
+
+//       <div className="p-2 sm:p-3">
+//         <p className="font-bold text-sm sm:text-md text-left">
+//           ₦{car.price.toLocaleString()}
+//         </p>
+//         <div className="mt-1">
+//           <h3 className="font-medium text-xs sm:text-sm truncate">
+//             {car.name}
+//           </h3>
+//           <p className="text-xs text-gray-500">{car.year}</p>
+//         </div>
+//         <div className="grid grid-cols-2 gap-2 mt-2">
+//           <div className="flex items-center gap-1">
+//             <Gauge size={14} />
+//             <span className="text-xs">{car.mileage} Miles</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Fuel size={14} />
+//             <span className="text-xs">{car.fuelType}</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Settings size={14} />
+//             <span className="text-xs">{car.transmission}</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Calendar size={14} />
+//             <span className="text-xs">{car.year}</span>
+//           </div>
+//         </div>
+
+//         <div className="flex gap-2 mt-2">
+//           <button
+//             onClick={handleViewDetails}
+//             className="w-full py-1 px-2 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-100 transition-colors"
+//           >
+//             View Car Details
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const AdminInventoryPage: React.FC = () => {
+//   const [cars, setCars] = useState<Car[]>([]);
+//   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+//   const [searchParams, setSearchParams] = useState({
+//     make: null,
+//     model: null,
+//   });
+
+//   // Generate years for dropdown (current year - 20 years)
+//   const years = Array.from({ length: 20 }, (_, i) => ({
+//     value: `${2024 - i}`,
+//   }));
+
+//   // Fetch cars and apply filters
+//   const fetchCars = async () => {
+//     setIsLoading(true);
+//     try {
+//       const params = new URLSearchParams();
+//       if (searchParams.make) params.set("make", searchParams.make);
+//       if (searchParams.model) params.set("model", searchParams.model);
+//       if (selectedYear) params.set("year", selectedYear);
+
+//       const response = await fetch(
+//         `/api/cars${params.toString() ? `?${params.toString()}` : ""}`
+//       );
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch cars");
+//       }
+//       const data = await response.json();
+//       setCars(data);
+//       setFilteredCars(data);
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : "An error occurred");
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Handle search
+//   const handleSearch = ({ make, model }) => {
+//     setSearchParams({ make, model });
+//     fetchCars();
+//   };
+
+//   // Handle year change
+//   const handleYearChange = (year: string | null) => {
+//     setSelectedYear(year);
+//     fetchCars();
+//   };
+
+//   // Handle clear filters
+//   const handleClearFilters = () => {
+//     setSelectedYear(null);
+//     setSearchParams({ make: null, model: null });
+//     fetchCars();
+//   };
+
+//   // Initial fetch
+//   React.useEffect(() => {
+//     fetchCars();
+//   }, []);
+
+//   if (isLoading) {
+//     return (
+//       <div className="flex justify-center items-center h-full">
+//         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="text-center mt-32 text-red-600">
+//         Error loading cars: {error}
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="mx-auto">
+//       <div className="flex flex-col p-4 sm:p-6">
+//         <div className="mb-4 sm:mb-6">
+//           <div className="flex w-full justify-center items-center py-3">
+//             <p>Total cars:</p> <p>{totalCars}</p>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row items-center gap-4">
+//             <div className="w-full sm:w-2/3">
+//               <CarSearch onSearch={handleSearch} />
+//             </div>
+//             <div className="w-full sm:w-1/3">
+//               <FormDropDown
+//                 name="year"
+//                 options={years}
+//                 value={selectedYear}
+//                 onSelect={handleYearChange}
+//                 placeholder="Filter by Year"
+//               />
+//             </div>
+//             <button
+//               onClick={handleClearFilters}
+//               className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+//             >
+//               Clear Filters
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* Responsive Grid */}
+//         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+//           {cars.map((car) => (
+//             <CarCard key={car._id} car={car} />
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminInventoryPage;
+
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Fuel, Settings, Calendar, Gauge } from "lucide-react";
 import Image from "next/image";
 import CarSearch from "@/components/searchCar";
+import { FormDropDown } from "@/components/Dropdown";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Car {
   _id: string;
-  name: string;
+  make: string;
+  model: string;
   year: number;
   price: number;
   mileage: number;
@@ -21,6 +252,11 @@ interface CarCardProps {
 }
 
 const CarCard: React.FC<CarCardProps> = ({ car }) => {
+  const router = useRouter();
+
+  const handleViewDetails = () => {
+    router.push(`dashboard/${car._id}`);
+  };
   return (
     <div className="bg-white border relative rounded-lg shadow-md overflow-hidden">
       {car.status && (
@@ -38,7 +274,7 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
       <div className="relative h-24 sm:h-40 overflow-hidden">
         <Image
           src={car.images[0] || "/placeholder.jpg"}
-          alt={car.name}
+          alt=""
           width={250}
           height={150}
           className="w-full h-full object-cover"
@@ -51,7 +287,7 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
         </p>
         <div className="mt-1">
           <h3 className="font-medium text-xs sm:text-sm truncate">
-            {car.name}
+            {car.make} {car.model}
           </h3>
           <p className="text-xs text-gray-500">{car.year}</p>
         </div>
@@ -75,7 +311,10 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
         </div>
 
         <div className="flex gap-2 mt-2">
-          <button className="w-full py-1 px-2 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-100 transition-colors">
+          <button
+            onClick={handleViewDetails}
+            className="w-full py-1 px-2 border border-gray-300 rounded-md text-xs font-medium hover:bg-gray-100 transition-colors"
+          >
             View Car Details
           </button>
         </div>
@@ -84,43 +323,92 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
   );
 };
 
+const fetchCarsWithParams = async (params: URLSearchParams) => {
+  const response = await fetch(
+    `/api/cars${params.toString() ? `?${params.toString()}` : ""}`
+  );
+  if (!response.ok) throw new Error("Failed to fetch cars");
+  return response.json();
+};
+
+const fetchTotalCars = async () => {
+  const response = await fetch("http://localhost:3000/api/cars/count");
+  if (!response.ok) throw new Error("Failed to fetch total cars");
+  const data = await response.json();
+  return data.total;
+};
+
 const AdminInventoryPage: React.FC = () => {
-  const [cars, setCars] = useState<Car[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useState({
+    make: null,
+    model: null,
+  });
 
-  // Fetch cars from the backend
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await fetch("/api/cars");
-        if (!response.ok) {
-          throw new Error("Failed to fetch cars");
-        }
-        const data = await response.json();
-        setCars(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Generate years for dropdown (current year - 20 years)
+  const years = Array.from({ length: 20 }, (_, i) => ({
+    value: `${2024 - i}`,
+    label: `${2024 - i}`,
+  }));
 
-    fetchCars();
-  }, []);
+  // Build query params
+  const buildQueryParams = () => {
+    const params = new URLSearchParams();
+    if (searchParams.make) params.set("make", searchParams.make);
+    if (searchParams.model) params.set("model", searchParams.model);
+    if (selectedYear) params.set("year", selectedYear);
+    return params;
+  };
 
-  if (isLoading) {
+  // Fetch cars with React Query
+  const {
+    data: cars = [],
+    isLoading: carsLoading,
+    error: carsError,
+  } = useQuery({
+    queryKey: ["cars", searchParams, selectedYear],
+    queryFn: () => fetchCarsWithParams(buildQueryParams()),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+  });
+
+  // Fetch total cars count
+  const { data: totalCars } = useQuery({
+    queryKey: ["totalCars"],
+    queryFn: fetchTotalCars,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+  });
+
+  // Handle search
+  const handleSearch = ({ make, model }) => {
+    setSearchParams({ make, model });
+  };
+
+  // Handle year change
+  const handleYearChange = (value: string) => {
+    setSelectedYear(value === "all" ? null : value);
+  };
+
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setSelectedYear(null);
+    setSearchParams({ make: null, model: null });
+  };
+
+  if (carsLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center h-[100vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
       </div>
     );
   }
 
-  if (error) {
+  if (carsError) {
     return (
-      <div className="text-center text-red-600">
-        Error loading cars: {error}
+      <div className="text-center mt-32 text-red-600">
+        Error loading cars:{" "}
+        {carsError instanceof Error ? carsError.message : "An error occurred"}
       </div>
     );
   }
@@ -128,11 +416,43 @@ const AdminInventoryPage: React.FC = () => {
   return (
     <div className="mx-auto">
       <div className="flex flex-col p-4 sm:p-6">
-        <div className="mb-4 sm:mb-6 flex items-center justify-around gap-4">
-          <CarSearch />
+        <div className="mb-4 sm:mb-6">
+          <div className="flex w-full justify-center items-center py-3 gap-2">
+            <p className="font-medium">Total cars:</p>
+            <p className="font-bold">{totalCars || 0}</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="w-full sm:w-2/3">
+              <CarSearch onSearch={handleSearch} />
+            </div>
+            <div className="w-full max-h-[80px] sm:w-1/3">
+              <Select
+                value={selectedYear || "all"}
+                onValueChange={handleYearChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter by Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Years</SelectItem>
+                  {years.map((year) => (
+                    <SelectItem key={year.value} value={year.value}>
+                      {year.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
 
-        {/* Responsive Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {cars.map((car) => (
             <CarCard key={car._id} car={car} />

@@ -14,6 +14,7 @@ import {
   Cog,
   HardDrive,
   PlusCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { PiEngine } from "react-icons/pi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +33,9 @@ interface CarDetails {
   transmission: string;
   status: string;
   images: string[];
-  drivetrain?: string;
-  extras?: string;
+  condition: string; // New field
+  drivetrain: string; // New field
+  extras: string; // New field
 }
 
 const ProductDetailsPage = () => {
@@ -88,8 +90,9 @@ const ProductDetailsPage = () => {
     fuelType: Fuel,
     transmission: Cog,
     status: Factory,
-    drivetrain: HardDrive,
-    extras: PlusCircle,
+    condition: ShieldCheck, // Icon for condition
+    drivetrain: HardDrive, // Icon for drivetrain
+    extras: PlusCircle, // Icon for extras
   };
 
   if (isLoading) {
@@ -229,15 +232,13 @@ const ProductDetailsPage = () => {
                       <Cog className="w-5 h-5 text-blue-600" />
                       <span>{car.transmission}</span>
                     </div>
-                    {car.drivetrain && (
-                      <div className="flex items-center gap-2">
-                        <HardDrive className="w-5 h-5 text-blue-600" />
-                        <span>{car.drivetrain}</span>
-                      </div>
-                    )}
                     <div className="flex items-center gap-2">
-                      <Factory className="w-5 h-5 text-blue-600" />
-                      <span>{car.status}</span>
+                      <HardDrive className="w-5 h-5 text-blue-600" />
+                      <span>{car.drivetrain}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5 text-blue-600" />
+                      <span>{car.condition}</span>
                     </div>
                   </div>
                 </div>
@@ -254,7 +255,7 @@ const ProductDetailsPage = () => {
                       mileage: `${car.mileage} km`,
                       fuelType: car.fuelType,
                       transmission: car.transmission,
-                      status: car.status,
+                      condition: car.condition,
                       drivetrain: car.drivetrain,
                       extras: car.extras,
                     }).map(([key, value]) => {

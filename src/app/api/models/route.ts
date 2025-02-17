@@ -1,20 +1,31 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongodb";
 import Car from "@/models/car";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "GET") return res.status(405).json({ message: "Method Not Allowed" });
-
-  const { make } = req.query;
-  if (!make) return res.status(400).json({ message: "Make is required" });
-
+export async function GET(request: NextRequest) {
   try {
     await connectMongoDB();
-    const models = await Car.distinct("model", { make }); // Get models for the given make
 
-    res.status(200).json(models);
+    const { searchParams } = new URL(request.url);
+    const make = searchParams.get("make");
+
+    if (!make) {
+      return NextResponse.json(
+        { message: "Make is required" },
+        { status: 400 }
+      );
+    }
+
+    const models = await Car.distinct("model", { make });
+
+    return NextResponse.json(models, { status: 200 });
   } catch (error) {
     console.error("Error fetching models:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+
+    // Return an error response
+    return NextResponse.json(
+      { error: `Internal Server Error: ${error}` },
+      { status: 500 }
+    );
   }
 }
