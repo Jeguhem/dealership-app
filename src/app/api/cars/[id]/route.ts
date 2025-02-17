@@ -7,9 +7,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    await connectMongoDB();
-
     const carId = params.id;
+    await connectMongoDB();
 
     // Validate if the ID is in correct MongoDB format
     if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
