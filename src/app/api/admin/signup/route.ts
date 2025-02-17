@@ -1,48 +1,68 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import connectMongoDB from "@/lib/mongodb";
+import User from "@/models/user"; // We'll create this next
 import bcrypt from "bcryptjs";
-import connectDB from "@/lib/mongodb";
-import Admin from "@/models/admin";
+import jwt from "jsonwebtoken";
 
-export async function POST(reqt: NextRequest) {
+// First, let's create the signup endpoint
+export async function POST(req: NextRequest) {
   try {
-    console.log("started")
-    const { email, password } = await request.json();
-    console.log(email,password)
-    if (!email || !password) {
+    await connectMongoDB();
+    const { email, password, name } = await req.json();
+
+    // Validate input
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "All fields are required" },
         { status: 400 }
       );
     }
 
-    await connectDB();
-
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return NextResponse.json(
-        { error: "Admin already exists" },
+        { error: "Email already registered" },
         { status: 400 }
       );
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new admin
-    const admin = await Admin.create({
+    // Create new user
+    const newUser = new User({
       email,
       password: hashedPassword,
+      name,
     });
 
+    await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: newUser._id },
+      process.env.JWT_SECRET || "your-default-secret",
+      { expiresIn: "24h" }
+    );
+
     return NextResponse.json(
-      { message: "Admin created successfully", admin },
-      { status: 201 },
+      {
+        message: "User created successfully",
+        token,
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+        },
+      },
+      { status: 201 }
     );
   } catch (error) {
-    console.error("Error in admin signup:", error);
+    console.error("Error in signup:", error);
     return NextResponse.json(
-      { error: "Error creating admin" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }

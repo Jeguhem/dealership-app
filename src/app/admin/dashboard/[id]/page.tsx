@@ -1,21 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Gauge,
-  Calendar,
-  Car,
-  Factory,
-  MapPin,
-  Fuel,
-  Cog,
-  HardDrive,
-  PlusCircle,
-  ShieldCheck,
-  Trash2,
-  Edit,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2, Edit } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -98,7 +83,7 @@ const AdminProductDetailsPage = () => {
   };
 
   const handleEdit = () => {
-    router.push(`/admin/cars/edit/${id}`);
+    router.push(`/admin/edit/${id}`);
   };
 
   // Loading and error states remain the same as the original component

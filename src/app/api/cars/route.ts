@@ -16,9 +16,9 @@ export async function POST(req: NextRequest) {
       transmission,
       status = "Available",
       images,
-      condition,     // Added field
-      drivetrain,    // Added field
-      extras,        // Added field
+      condition, // Added field
+      drivetrain, // Added field
+      extras, // Added field
     } = await req.json();
 
     // Ensure images are provided as URLs
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
       transmission,
       status,
       images,
-      condition,     // Added field
-      drivetrain,    // Added field
-      extras,        // Added field
+      condition, // Added field
+      drivetrain, // Added field
+      extras, // Added field
     });
 
     await newCar.save();
@@ -109,6 +109,121 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching cars:", error);
     return NextResponse.json(
       { error: `Internal Server Error: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectMongoDB();
+    const {
+      make,
+      model,
+      year,
+      price,
+      mileage,
+      fuelType,
+      transmission,
+      status,
+      images,
+      condition,
+      drivetrain,
+      extras,
+    } = await req.json();
+
+    // Validate images array
+    if (!images || images.length === 0) {
+      return NextResponse.json(
+        { error: "At least one image is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate drivetrain if provided
+    if (drivetrain && !["4WD", "AWD", "FWD", "RWD"].includes(drivetrain)) {
+      return NextResponse.json(
+        { error: "Invalid drivetrain type" },
+        { status: 400 }
+      );
+    }
+
+    // Find and update the car
+    const updatedCar = await Car.findByIdAndUpdate(
+      params.id,
+      {
+        make,
+        model,
+        year,
+        price,
+        mileage,
+        fuelType,
+        transmission,
+        status,
+        images,
+        condition,
+        drivetrain,
+        extras,
+      },
+      { new: true, runValidators: true } // Returns the updated document and runs schema validators
+    );
+
+    if (!updatedCar) {
+      return NextResponse.json({ error: "Car not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Car updated successfully", car: updatedCar },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating car:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+// Optional: Add DELETE endpoint for image deletion
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectMongoDB();
+    const { imageUrls } = await req.json();
+
+    // Find the car
+    const car = await Car.findById(params.id);
+
+    if (!car) {
+      return NextResponse.json({ error: "Car not found" }, { status: 404 });
+    }
+
+    // Remove specified images
+    const updatedImages = car.images.filter(
+      (img: string) => !imageUrls.includes(img)
+    );
+
+    // Update car with new image array
+    const updatedCar = await Car.findByIdAndUpdate(
+      params.id,
+      { images: updatedImages },
+      { new: true }
+    );
+
+    return NextResponse.json(
+      { message: "Images deleted successfully", car: updatedCar },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting images:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
