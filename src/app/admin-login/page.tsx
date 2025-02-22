@@ -136,17 +136,24 @@ export default function AdminLogin() {
       } else {
         throw new Error(data.message || "Invalid credentials");
       }
-    } catch (err) {
-      setError(err.message);
-      toast.error(err.message || "Login failed", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+      toast.error(
+        err instanceof Error ? err.message : "An unknown error occurred",
+        {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
+      );
     } finally {
       setLoading(false);
     }
