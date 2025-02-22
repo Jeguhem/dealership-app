@@ -128,7 +128,10 @@ const fetchTotalCars = async () => {
 const AdminInventoryPage: React.FC = () => {
   const router = useRouter();
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
-  const [searchParams, setSearchParams] = useState({
+  const [searchParams, setSearchParams] = useState<{
+    make: string | null;
+    model: string | null;
+  }>({
     make: null,
     model: null,
   });
@@ -168,9 +171,18 @@ const AdminInventoryPage: React.FC = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Handle search
-  const handleSearch = ({ make, model }) => {
-    setSearchParams({ make, model });
+  const handleSearch = ({
+    make,
+    model,
+  }: {
+    make: string | null;
+    model: string | null;
+  }) => {
+    const newSearchParams = {
+      make: make ?? null,
+      model: model ?? null,
+    };
+    setSearchParams(newSearchParams);
   };
 
   const handleAddNewCar = () => {
@@ -256,7 +268,7 @@ const AdminInventoryPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-          {cars.map((car) => (
+          {cars.map((car: Car) => (
             <CarCard key={car._id} car={car} />
           ))}
         </div>
