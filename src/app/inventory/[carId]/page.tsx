@@ -260,7 +260,9 @@ const ProductDetailsPage = () => {
                       drivetrain: car.drivetrain,
                       extras: car.extras,
                     }).map(([key, value]) => {
-                      const IconComponent = specIcons[key];
+                      const IconComponent =
+                        specIcons[key as keyof typeof specIcons]; // ✅ Fix applied here
+
                       return (
                         <div key={key} className="border-b pb-2">
                           <div className="flex items-center gap-2 text-gray-500 text-sm">

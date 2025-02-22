@@ -33,7 +33,7 @@ interface Car {
 }
 
 interface PriceRange {
-  min: number;
+  min: number | null;
   max: number | null;
 }
 
@@ -321,7 +321,17 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
 const InventoryPage: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
+  interface Filters {
+    make: string | null;
+    model: string | null;
+    year: string | null;
+    minPrice: number | null;
+    maxPrice: number | null;
+    minMileage: number | null;
+    maxMileage: number | null;
+  }
+
+  const [filters, setFilters] = useState<Filters>({
     make: null,
     model: null,
     year: null,
@@ -357,7 +367,13 @@ const InventoryPage: React.FC = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  const handleSearch = ({ make, model }) => {
+  const handleSearch = ({
+    make,
+    model,
+  }: {
+    make: string | null;
+    model: string | null;
+  }) => {
     setFilters((prev) => ({
       ...prev,
       make: make || null,
