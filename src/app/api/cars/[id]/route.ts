@@ -105,15 +105,15 @@ export async function DELETE(
 // Optionally, add PUT method for updating car details
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectMongoDB();
 
-    const carId = params.id;
+    const { id } = await params;
     const updates = await request.json();
 
-    if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return NextResponse.json(
         { error: "Invalid car ID format" },
         { status: 400 }
@@ -121,7 +121,7 @@ export async function PUT(
     }
 
     const updatedCar = await Car.findByIdAndUpdate(
-      carId,
+      id,
       { $set: updates },
       { new: true, runValidators: true }
     ).lean();
