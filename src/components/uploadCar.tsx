@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { CldUploadWidget } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
+import Image from "next/image";
 
 export default function UploadCar() {
   const [carData, setCarData] = useState({
@@ -19,7 +23,7 @@ export default function UploadCar() {
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  const handleImageUpload = (result: any) => {
+  const handleImageUpload = (result: CloudinaryUploadWidgetResults) => {
     if (result.event === "success") {
       setImageUrls((prev) => [...prev, result.info.secure_url]);
     }
@@ -107,7 +111,7 @@ export default function UploadCar() {
         {/* Show uploaded images */}
         <div>
           {imageUrls.map((url, index) => (
-            <img key={index} src={url} alt="Car" width="100" />
+            <Image key={index} src={url} alt="Car" width="100" />
           ))}
         </div>
 

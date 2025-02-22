@@ -1,17 +1,14 @@
 import connectMongoDB from "@/lib/mongodb";
 import Car from "@/models/car";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     await connectMongoDB();
-    
+
     const totalCars = await Car.countDocuments();
-    
-    return NextResponse.json(
-      { total: totalCars },
-      { status: 200 }
-    );
+
+    return NextResponse.json({ total: totalCars }, { status: 200 });
   } catch (error) {
     console.error("Error counting cars:", error);
     return NextResponse.json(

@@ -15,6 +15,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const AdminProductDetailsPage = () => {
   const pathname = usePathname();
@@ -164,7 +165,7 @@ const AdminProductDetailsPage = () => {
             <div className="space-y-4">
               {/* Main Image */}
               <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={car.images[currentImageIndex]}
                   alt={`${car.make} ${car.model}`}
                   className="w-full h-full object-cover"
@@ -203,7 +204,7 @@ const AdminProductDetailsPage = () => {
                         : "border-transparent"
                     }`}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"

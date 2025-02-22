@@ -7,7 +7,7 @@ import {
   Gauge,
   Calendar,
   Car,
-  Palette,
+  // Palette,
   Factory,
   MapPin,
   Fuel,
@@ -16,27 +16,28 @@ import {
   PlusCircle,
   ShieldCheck,
 } from "lucide-react";
-import { PiEngine } from "react-icons/pi";
+// import { PiEngine } from "react-icons/pi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePathname } from "next/navigation"; // Use usePathname to extract the id
 import { useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Image from "next/image";
 
-interface CarDetails {
-  _id: string;
-  make: string;
-  model: string;
-  year: number;
-  price: number;
-  mileage: number;
-  fuelType: string;
-  transmission: string;
-  status: string;
-  images: string[];
-  condition: string; // New field
-  drivetrain: string; // New field
-  extras: string; // New field
-}
+// interface CarDetails {
+//   _id: string;
+//   make: string;
+//   model: string;
+//   year: number;
+//   price: number;
+//   mileage: number;
+//   fuelType: string;
+//   transmission: string;
+//   status: string;
+//   images: string[];
+//   condition: string; // New field
+//   drivetrain: string; // New field
+//   extras: string; // New field
+// }
 
 const ProductDetailsPage = () => {
   const pathname = usePathname(); // Get the full pathname
@@ -135,7 +136,7 @@ const ProductDetailsPage = () => {
           <div className="md:col-span-2 space-y-2">
             <div className="relative">
               <div className="relative aspect-[4/3] md:aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={car.images[currentImageIndex]}
                   alt={`${car.make} ${car.model} - Image ${
                     currentImageIndex + 1
@@ -169,7 +170,7 @@ const ProductDetailsPage = () => {
                       index === currentImageIndex ? "ring-2 ring-blue-500" : ""
                     }`}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"

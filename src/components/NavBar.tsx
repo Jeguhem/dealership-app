@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import main_logo from "@/public/main-logo.svg";
 import { Button } from "./ui/button";
 import { CircleArrowRight } from "lucide-react";
 import NavLinks from "./NavLinks";

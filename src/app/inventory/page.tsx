@@ -12,7 +12,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import Navbar from "@/components/NavBar";
+// import Navbar from "@/components/NavBar";
 
 // Create a QueryClient instance
 const queryClient = new QueryClient();
@@ -147,7 +147,6 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
 };
 
 const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
-  filterType,
   setFilterType,
   customRange,
   setCustomRange,
@@ -156,10 +155,10 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   onPriceChange,
 }) => {
   const presetRanges: PresetRange[] = [
-    { id: 1, label: "Under $30k", min: 0, max: 30000 },
-    { id: 2, label: "$30k - $50k", min: 30000, max: 50000 },
-    { id: 3, label: "$50k - $80k", min: 50000, max: 80000 },
-    { id: 4, label: "$80k+", min: 80000, max: null },
+    { id: 1, label: "Under ₦30M", min: 0, max: 30000000 },
+    { id: 2, label: "₦30M - ₦50M", min: 30000000, max: 50000000 },
+    { id: 3, label: "₦50k - ₦100M", min: 50000000, max: 80000000 },
+    { id: 4, label: "₦100M+", min: 100000000, max: null },
   ];
 
   const handlePresetClick = (range: PresetRange) => {
@@ -248,6 +247,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const handlePriceChange = (range: PriceRange) => {
     setPriceRange(range);
+    console.log(priceRange);
     onPriceChange(range);
   };
 
@@ -335,7 +335,6 @@ const InventoryPage: React.FC = () => {
     data: cars = [],
     isLoading,
     error,
-    refetch,
   } = useQuery({
     queryKey: ["cars", filters],
     queryFn: async () => {
@@ -383,7 +382,7 @@ const InventoryPage: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Navbar />
+      {/* <div className="hidden lg:flex"> <Navbar /></div> */}
       <div className="mx-auto">
         {isFilterOpen && (
           <div
@@ -402,14 +401,14 @@ const InventoryPage: React.FC = () => {
 
           <div className="flex-1 p-4 sm:p-6">
             <div className="mb-4 sm:mb-6">
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="lg:hidden p-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+              >
+                <Filter className="w-5 h-5" />
+              </button>
               <div className="flex items-center justify-around gap-4">
                 <CarSearch onSearch={handleSearch} />
-                <button
-                  onClick={() => setIsFilterOpen(true)}
-                  className="lg:hidden p-2 rounded-lg border border-gray-300 hover:bg-gray-50"
-                >
-                  <Filter className="w-5 h-5" />
-                </button>
               </div>
             </div>
 

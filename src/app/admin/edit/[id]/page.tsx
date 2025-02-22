@@ -69,7 +69,7 @@ const EditCarPage: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname(); // Get the full pathname
   const id = pathname.split("/").pop();
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   // Fetch existing car data
   useEffect(() => {
@@ -87,7 +87,7 @@ const EditCarPage: React.FC = () => {
     };
 
     fetchCarData();
-  }, []);
+  }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -302,7 +302,7 @@ const EditCarPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 {/* Form fields with current values shown */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">

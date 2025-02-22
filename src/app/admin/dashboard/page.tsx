@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Fuel, Settings, Calendar, Gauge } from "lucide-react";
+import { Fuel, Settings, Calendar, Gauge, CirclePlus } from "lucide-react";
 import Image from "next/image";
 import CarSearch from "@/components/searchCar";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface Car {
   _id: string;
@@ -43,7 +44,9 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
           className={`absolute top-2 right-2 z-10 px-2 py-1 rounded-full text-xs font-semibold ${
             car.status === "New"
               ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              : car.status === "Sold"
+              ? "bg-red-100 text-red-800"
+              : "bg-gray-100 text-gray-800"
           }`}
         >
           {car.status}
@@ -117,7 +120,13 @@ const fetchTotalCars = async () => {
   return data.total;
 };
 
+// interface CarSearchType {
+//   make?: string;
+//   model?: string;
+// }
+
 const AdminInventoryPage: React.FC = () => {
+  const router = useRouter();
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useState({
     make: null,
@@ -148,7 +157,7 @@ const AdminInventoryPage: React.FC = () => {
     queryKey: ["cars", searchParams, selectedYear],
     queryFn: () => fetchCarsWithParams(buildQueryParams()),
     staleTime: 5 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   // Fetch total cars count
@@ -156,12 +165,16 @@ const AdminInventoryPage: React.FC = () => {
     queryKey: ["totalCars"],
     queryFn: fetchTotalCars,
     staleTime: 5 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   // Handle search
   const handleSearch = ({ make, model }) => {
     setSearchParams({ make, model });
+  };
+
+  const handleAddNewCar = () => {
+    router.push(`/admin/add-car`);
   };
 
   // Handle year change
@@ -196,9 +209,19 @@ const AdminInventoryPage: React.FC = () => {
     <div className="mx-auto">
       <div className="flex flex-col p-4 sm:p-6">
         <div className="mb-4 sm:mb-6">
-          <div className="flex w-full justify-center items-center py-3 gap-2">
-            <p className="font-medium">Total cars:</p>
-            <p className="font-bold">{totalCars || 0}</p>
+          <div className="flex w-full justify-center items-center py-3 gap-6">
+            <div className="flex gap-2 items-center">
+              <p className="font-medium">Total cars:</p>
+              <p className="font-bold">{totalCars || 0}</p>
+            </div>
+            <Button
+              onClick={handleAddNewCar}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              <CirclePlus className="w-4 h-4" />
+              Add New Car
+            </Button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-4">

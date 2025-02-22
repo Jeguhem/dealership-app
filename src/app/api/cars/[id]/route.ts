@@ -2,23 +2,55 @@ import connectMongoDB from "@/lib/mongodb";
 import Car from "@/models/car";
 import { NextRequest, NextResponse } from "next/server";
 
+// export async function GET(
+//   request: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   try {
+//     const carId = params.id;
+//     await connectMongoDB();
+
+//     // Validate if the ID is in correct MongoDB format
+//     if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
+//       return NextResponse.json(
+//         { error: "Invalid car ID format" },
+//         { status: 400 }
+//       );
+//     }
+
+//     const car = await Car.findById(carId).select("-__v").lean();
+
+//     if (!car) {
+//       return NextResponse.json({ error: "Car not found" }, { status: 404 });
+//     }
+
+//     return NextResponse.json(car, { status: 200 });
+//   } catch (error) {
+//     console.error("Error fetching car:", error);
+//     return NextResponse.json(
+//       { error: "Failed to fetch car details" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const carId = params.id;
+    const { id } = await params;
     await connectMongoDB();
 
     // Validate if the ID is in correct MongoDB format
-    if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return NextResponse.json(
         { error: "Invalid car ID format" },
         { status: 400 }
       );
     }
 
-    const car = await Car.findById(carId).select("-__v").lean();
+    const car = await Car.findById(id).select("-__v").lean();
 
     if (!car) {
       return NextResponse.json({ error: "Car not found" }, { status: 404 });
@@ -213,11 +245,14 @@ export async function PATCH(
     }
 
     return NextResponse.json(updatedCar, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating car:", error);
 
     return NextResponse.json(
-      { error: "Failed to update car images", details: error.message },
+      {
+        error: "Failed to update car images",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

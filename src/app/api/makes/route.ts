@@ -11,12 +11,14 @@ export async function GET(request: NextRequest) {
 
     // Return the unique makes as a JSON response
     return NextResponse.json(makes, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching makes:", error);
+  } catch (error: unknown) {
+    console.error("Error fetching car makes:", error);
 
-    // Return an error response
     return NextResponse.json(
-      { error: `Internal Server Error: ${error}` },
+      {
+        error: "Failed to fetch car makes",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
