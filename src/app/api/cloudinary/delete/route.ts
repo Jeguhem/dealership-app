@@ -213,7 +213,7 @@ async function generateSignature(
 }
 
 // Helper function to extract public_id from Cloudinary URL (if needed)
-export function getPublicIdFromUrl(url: string): string {
+function getPublicIdFromUrl(url: string): string {
   try {
     const matches = url.match(/\/v\d+\/([^/]+)\./);
     return matches && matches[1] ? matches[1] : "";
