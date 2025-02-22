@@ -67,23 +67,58 @@ export async function GET(
 }
 
 // Optionally, add DELETE method if you need it
+// export async function DELETE(
+//   request: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   try {
+//     await connectMongoDB();
+
+//     const carId = params.id;
+
+//     if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
+//       return NextResponse.json(
+//         { error: "Invalid car ID format" },
+//         { status: 400 }
+//       );
+//     }
+
+//     const deletedCar = await Car.findByIdAndDelete(carId);
+
+//     if (!deletedCar) {
+//       return NextResponse.json({ error: "Car not found" }, { status: 404 });
+//     }
+
+//     return NextResponse.json(
+//       { message: "Car deleted successfully" },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error("Error deleting car:", error);
+//     return NextResponse.json(
+//       { error: "Failed to delete car" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectMongoDB();
 
-    const carId = params.id;
+    const { id } = await params;
 
-    if (!carId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return NextResponse.json(
         { error: "Invalid car ID format" },
         { status: 400 }
       );
     }
 
-    const deletedCar = await Car.findByIdAndDelete(carId);
+    const deletedCar = await Car.findByIdAndDelete(id);
 
     if (!deletedCar) {
       return NextResponse.json({ error: "Car not found" }, { status: 404 });
