@@ -262,15 +262,43 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { X, AlertCircle } from "lucide-react";
-import audi from "@/public/image/audi.svg";
-import car_logo from "@/public/image/car-logo.svg";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
+import audi from "@/public/image/audi.svg";
+import car_logo from "@/public/image/car-logo.svg";
 
-const useClickOutside = (ref, handler) => {
+// Type definitions
+interface Option {
+  id: string;
+  name: string;
+}
+
+interface ComboboxProps {
+  value: Option | null;
+  onChange: (option: Option) => void;
+  options: Option[];
+  placeholder: string;
+  disabled?: boolean;
+  errorMessage?: string;
+  onClear?: () => void;
+  isModel?: boolean;
+}
+
+interface CarSearchProps {
+  onSearch: (searchParams: {
+    make: string | null;
+    model: string | null;
+  }) => void;
+}
+
+// Hook to detect clicks outside a given element
+const useClickOutside = (
+  ref: React.RefObject<HTMLElement>,
+  handler: (event: MouseEvent | TouchEvent) => void
+) => {
   useEffect(() => {
-    const listener = (event) => {
-      if (!ref.current || ref.current.contains(event.target)) {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
       }
       handler(event);
@@ -286,7 +314,7 @@ const useClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-const Combobox = ({
+const Combobox: React.FC<ComboboxProps> = ({
   value,
   onChange,
   options,
@@ -299,22 +327,21 @@ const Combobox = ({
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [showError, setShowError] = useState(false);
-  const comboboxRef = useRef(null);
+  const comboboxRef: React.RefObject<HTMLDivElement | null> = useRef(null);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
-  useClickOutside(comboboxRef, () => {
+  useClickOutside(comboboxRef as React.RefObject<HTMLElement>, () => {
     setIsOpen(false);
     setShowError(false);
   });
 
-  const filteredOptions =
-    query === ""
-      ? options
-      : options.filter((option) =>
-          option.name.toLowerCase().includes(query.toLowerCase())
-        );
+  const filteredOptions = query
+    ? options.filter((option) =>
+        option.name.toLowerCase().includes(query.toLowerCase())
+      )
+    : options;
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (disabled) return;
 
     switch (e.key) {
@@ -347,7 +374,7 @@ const Combobox = ({
     }
   };
 
-  const selectOption = (option) => {
+  const selectOption = (option: Option) => {
     onChange(option);
     setQuery(option.name);
     setIsOpen(false);
@@ -366,23 +393,21 @@ const Combobox = ({
   return (
     <div className="relative" ref={comboboxRef}>
       <div
-        className={`
-        flex items-center gap-3 p-1 rounded-lg
-        ${disabled ? "bg-gray-50" : "bg-gray-100"}
-        ${showError ? "border border-red-300" : ""}
-      `}
+        className={`flex items-center gap-3 p-1 rounded-lg ${
+          disabled ? "bg-gray-50" : "bg-gray-100"
+        } 
+        ${showError ? "border border-red-300" : ""}`}
       >
-        {!isModel ? (
-          <Image src={audi} alt="" width={24} height={24} />
-        ) : (
-          <Image src={car_logo} alt="" width={16} height={16} />
-        )}
+        <Image
+          src={isModel ? car_logo : audi}
+          alt="icon"
+          width={isModel ? 16 : 24}
+          height={isModel ? 16 : 24}
+        />
         <input
           type="text"
-          className={`
-            w-full min-w-[150px] bg-transparent border-none focus:outline-none
-            ${disabled ? "cursor-not-allowed text-gray-400" : "text-gray-700"}
-          `}
+          className={`w-full min-w-[150px] bg-transparent border-none focus:outline-none 
+          ${disabled ? "cursor-not-allowed text-gray-400" : "text-gray-700"}`}
           placeholder={placeholder}
           value={query}
           onChange={(e) => {
@@ -419,14 +444,11 @@ const Combobox = ({
             {filteredOptions.map((option, index) => (
               <li
                 key={option.id}
-                className={`
-                  px-2 py-1 cursor-pointer text-sm
-                  ${
-                    index === highlightedIndex
-                      ? "bg-gray-100"
-                      : "hover:bg-gray-50"
-                  }
-                `}
+                className={`px-2 py-1 cursor-pointer text-sm ${
+                  index === highlightedIndex
+                    ? "bg-gray-100"
+                    : "hover:bg-gray-50"
+                }`}
                 onClick={() => selectOption(option)}
               >
                 <span>{option.name}</span>
@@ -439,12 +461,13 @@ const Combobox = ({
   );
 };
 
-const CarSearch = ({ onSearch }) => {
-  const [selectedManufacturer, setSelectedManufacturer] = useState(null);
-  const [selectedModel, setSelectedModel] = useState(null);
+const CarSearch: React.FC<CarSearchProps> = ({ onSearch }) => {
+  const [selectedManufacturer, setSelectedManufacturer] =
+    useState<Option | null>(null);
+  const [selectedModel, setSelectedModel] = useState<Option | null>(null);
 
   // Fetch makes
-  const { data: makes = [] } = useQuery({
+  const { data: makes = [] } = useQuery<string[]>({
     queryKey: ["makes"],
     queryFn: async () => {
       const response = await fetch("/api/makes");
@@ -454,7 +477,7 @@ const CarSearch = ({ onSearch }) => {
   });
 
   // Fetch models for the selected make
-  const { data: models = [] } = useQuery({
+  const { data: models = [] } = useQuery<string[]>({
     queryKey: ["models", selectedManufacturer?.name],
     queryFn: async () => {
       if (!selectedManufacturer) return [];
@@ -467,47 +490,39 @@ const CarSearch = ({ onSearch }) => {
     enabled: !!selectedManufacturer,
   });
 
-  const handleManufacturerChange = (manufacturer) => {
-    setSelectedManufacturer(manufacturer);
-    setSelectedModel(null);
-    onSearch({ make: manufacturer?.name, model: null });
-  };
-
-  const handleModelChange = (model) => {
-    setSelectedModel(model);
-    onSearch({ make: selectedManufacturer?.name, model: model?.name });
-  };
-
-  const handleClearManufacturer = () => {
-    setSelectedManufacturer(null);
-    setSelectedModel(null);
-    onSearch({ make: null, model: null });
-  };
-
-  const handleClearModel = () => {
-    setSelectedModel(null);
-    onSearch({ make: selectedManufacturer?.name, model: null });
-  };
-
   return (
     <div className="flex flex-col lg:flex-row items-center gap-2 justify-center">
       <div className="flex px-3 gap-3 items-center bg-gray-50 p-1 rounded-lg">
         <Combobox
           value={selectedManufacturer}
-          onChange={handleManufacturerChange}
+          onChange={(manufacturer) => {
+            setSelectedManufacturer(manufacturer);
+            setSelectedModel(null);
+            onSearch({ make: manufacturer.name, model: null });
+          }}
           options={makes.map((make) => ({ id: make, name: make }))}
           placeholder="e.g Audi"
-          onClear={handleClearManufacturer}
+          onClear={() => {
+            setSelectedManufacturer(null);
+            setSelectedModel(null);
+            onSearch({ make: null, model: null });
+          }}
         />
         <Combobox
           value={selectedModel}
-          onChange={handleModelChange}
+          onChange={(model) => {
+            setSelectedModel(model);
+            onSearch({
+              make: selectedManufacturer?.name || null,
+              model: model.name,
+            });
+          }}
           options={models.map((model) => ({ id: model, name: model }))}
           placeholder="e.g Camry"
           disabled={!selectedManufacturer}
           errorMessage="Please select a manufacturer first"
-          onClear={handleClearModel}
-          isModel={true}
+          onClear={() => setSelectedModel(null)}
+          isModel
         />
       </div>
     </div>
@@ -515,3 +530,260 @@ const CarSearch = ({ onSearch }) => {
 };
 
 export default CarSearch;
+
+// "use client";
+// import React, { useState, useRef, useEffect } from "react";
+// import { X, AlertCircle } from "lucide-react";
+// import audi from "@/public/image/audi.svg";
+// import car_logo from "@/public/image/car-logo.svg";
+// import Image from "next/image";
+// import { useQuery } from "@tanstack/react-query";
+
+// const useClickOutside = (ref, handler) => {
+//   useEffect(() => {
+//     const listener = (event) => {
+//       if (!ref.current || ref.current.contains(event.target)) {
+//         return;
+//       }
+//       handler(event);
+//     };
+
+//     document.addEventListener("mousedown", listener);
+//     document.addEventListener("touchstart", listener);
+
+//     return () => {
+//       document.removeEventListener("mousedown", listener);
+//       document.removeEventListener("touchstart", listener);
+//     };
+//   }, [ref, handler]);
+// };
+
+// const Combobox = ({
+//   value,
+//   onChange,
+//   options,
+//   placeholder,
+//   disabled = false,
+//   errorMessage = "",
+//   onClear,
+//   isModel = false,
+// }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [query, setQuery] = useState("");
+//   const [showError, setShowError] = useState(false);
+//   const comboboxRef = useRef(null);
+//   const [highlightedIndex, setHighlightedIndex] = useState(0);
+
+//   useClickOutside(comboboxRef, () => {
+//     setIsOpen(false);
+//     setShowError(false);
+//   });
+
+//   const filteredOptions =
+//     query === ""
+//       ? options
+//       : options.filter((option) =>
+//           option.name.toLowerCase().includes(query.toLowerCase())
+//         );
+
+//   const handleKeyDown = (e) => {
+//     if (disabled) return;
+
+//     switch (e.key) {
+//       case "ArrowDown":
+//         e.preventDefault();
+//         setIsOpen(true);
+//         setHighlightedIndex((prev) =>
+//           prev < filteredOptions.length - 1 ? prev + 1 : 0
+//         );
+//         break;
+//       case "ArrowUp":
+//         e.preventDefault();
+//         setIsOpen(true);
+//         setHighlightedIndex((prev) =>
+//           prev > 0 ? prev - 1 : filteredOptions.length - 1
+//         );
+//         break;
+//       case "Enter":
+//         e.preventDefault();
+//         if (isOpen && filteredOptions[highlightedIndex]) {
+//           selectOption(filteredOptions[highlightedIndex]);
+//         } else {
+//           setIsOpen(true);
+//         }
+//         break;
+//       case "Escape":
+//         e.preventDefault();
+//         setIsOpen(false);
+//         break;
+//     }
+//   };
+
+//   const selectOption = (option) => {
+//     onChange(option);
+//     setQuery(option.name);
+//     setIsOpen(false);
+//     setShowError(false);
+//   };
+
+//   const handleInputClick = () => {
+//     if (disabled) {
+//       setShowError(true);
+//       return;
+//     }
+//     setIsOpen(true);
+//     setShowError(false);
+//   };
+
+//   return (
+//     <div className="relative" ref={comboboxRef}>
+//       <div
+//         className={`
+//         flex items-center gap-3 p-1 rounded-lg
+//         ${disabled ? "bg-gray-50" : "bg-gray-100"}
+//         ${showError ? "border border-red-300" : ""}
+//       `}
+//       >
+//         {!isModel ? (
+//           <Image src={audi} alt="" width={24} height={24} />
+//         ) : (
+//           <Image src={car_logo} alt="" width={16} height={16} />
+//         )}
+//         <input
+//           type="text"
+//           className={`
+//             w-full min-w-[150px] bg-transparent border-none focus:outline-none
+//             ${disabled ? "cursor-not-allowed text-gray-400" : "text-gray-700"}
+//           `}
+//           placeholder={placeholder}
+//           value={query}
+//           onChange={(e) => {
+//             setQuery(e.target.value);
+//             setIsOpen(true);
+//           }}
+//           onClick={handleInputClick}
+//           onKeyDown={handleKeyDown}
+//           disabled={disabled}
+//         />
+//         {value && onClear && (
+//           <button
+//             onClick={() => {
+//               onClear();
+//               setQuery("");
+//             }}
+//             className="p-1 hover:bg-gray-200 rounded-full"
+//           >
+//             <X className="w-3 h-3 text-gray-500" />
+//           </button>
+//         )}
+//       </div>
+
+//       {showError && errorMessage && (
+//         <div className="absolute mt-1 text-xs text-red-500 flex items-center gap-1">
+//           <AlertCircle className="w-3 h-3" />
+//           {errorMessage}
+//         </div>
+//       )}
+
+//       {isOpen && filteredOptions.length > 0 && (
+//         <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200">
+//           <ul className="py-1 max-h-60 overflow-y-auto">
+//             {filteredOptions.map((option, index) => (
+//               <li
+//                 key={option.id}
+//                 className={`
+//                   px-2 py-1 cursor-pointer text-sm
+//                   ${
+//                     index === highlightedIndex
+//                       ? "bg-gray-100"
+//                       : "hover:bg-gray-50"
+//                   }
+//                 `}
+//                 onClick={() => selectOption(option)}
+//               >
+//                 <span>{option.name}</span>
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const CarSearch = ({ onSearch }) => {
+//   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
+//   const [selectedModel, setSelectedModel] = useState(null);
+
+//   // Fetch makes
+//   const { data: makes = [] } = useQuery({
+//     queryKey: ["makes"],
+//     queryFn: async () => {
+//       const response = await fetch("/api/makes");
+//       if (!response.ok) throw new Error("Failed to fetch makes");
+//       return response.json();
+//     },
+//   });
+
+//   // Fetch models for the selected make
+//   const { data: models = [] } = useQuery({
+//     queryKey: ["models", selectedManufacturer?.name],
+//     queryFn: async () => {
+//       if (!selectedManufacturer) return [];
+//       const response = await fetch(
+//         `/api/models?make=${selectedManufacturer.name}`
+//       );
+//       if (!response.ok) throw new Error("Failed to fetch models");
+//       return response.json();
+//     },
+//     enabled: !!selectedManufacturer,
+//   });
+
+//   const handleManufacturerChange = (manufacturer) => {
+//     setSelectedManufacturer(manufacturer);
+//     setSelectedModel(null);
+//     onSearch({ make: manufacturer?.name, model: null });
+//   };
+
+//   const handleModelChange = (model) => {
+//     setSelectedModel(model);
+//     onSearch({ make: selectedManufacturer?.name, model: model?.name });
+//   };
+
+//   const handleClearManufacturer = () => {
+//     setSelectedManufacturer(null);
+//     setSelectedModel(null);
+//     onSearch({ make: null, model: null });
+//   };
+
+//   const handleClearModel = () => {
+//     setSelectedModel(null);
+//     onSearch({ make: selectedManufacturer?.name, model: null });
+//   };
+
+//   return (
+//     <div className="flex flex-col lg:flex-row items-center gap-2 justify-center">
+//       <div className="flex px-3 gap-3 items-center bg-gray-50 p-1 rounded-lg">
+//         <Combobox
+//           value={selectedManufacturer}
+//           onChange={handleManufacturerChange}
+//           options={makes.map((make: string) => ({ id: make, name: make }))}
+//           placeholder="e.g Audi"
+//           onClear={handleClearManufacturer}
+//         />
+//         <Combobox
+//           value={selectedModel}
+//           onChange={handleModelChange}
+//           options={models.map((model: string) => ({ id: model, name: model }))}
+//           placeholder="e.g Camry"
+//           disabled={!selectedManufacturer}
+//           errorMessage="Please select a manufacturer first"
+//           onClear={handleClearModel}
+//           isModel={true}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CarSearch;
