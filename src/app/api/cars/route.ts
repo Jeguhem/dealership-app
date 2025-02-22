@@ -178,8 +178,9 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     await connectMongoDB();
     const {
@@ -215,7 +216,7 @@ export async function PUT(
 
     // Find and update the car
     const updatedCar = await Car.findByIdAndUpdate(
-      params.id,
+      id,
       {
         make,
         model,
@@ -253,14 +254,15 @@ export async function PUT(
 // Optional: Add DELETE endpoint for image deletion
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     await connectMongoDB();
     const { imageUrls } = await req.json();
 
     // Find the car
-    const car = await Car.findById(params.id);
+    const car = await Car.findById(id);
 
     if (!car) {
       return NextResponse.json({ error: "Car not found" }, { status: 404 });
@@ -273,7 +275,7 @@ export async function PATCH(
 
     // Update car with new image array
     const updatedCar = await Car.findByIdAndUpdate(
-      params.id,
+      id,
       { images: updatedImages },
       { new: true }
     );
