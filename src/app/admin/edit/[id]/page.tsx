@@ -24,7 +24,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { getPublicIdFromUrl } from "@/app/api/cloudinary/delete/route";
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
 
 interface CarFormData {
   name: string;

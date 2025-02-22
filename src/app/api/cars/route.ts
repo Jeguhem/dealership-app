@@ -67,11 +67,73 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// export async function GET(request: NextRequest) {
+//   try {
+//     await connectMongoDB();
+//     const { searchParams } = new URL(request.url);
+//     const filters: Record<string, any> = {};
+
+//     // Handle price range
+//     const minPrice = searchParams.get("minPrice");
+//     const maxPrice = searchParams.get("maxPrice");
+//     if (minPrice || maxPrice) {
+//       filters.price = {};
+//       if (minPrice) filters.price.$gte = parseInt(minPrice);
+//       if (maxPrice) filters.price.$lte = parseInt(maxPrice);
+//     }
+
+//     // Handle other filters
+//     const make = searchParams.get("make");
+//     const model = searchParams.get("model");
+//     const year = searchParams.get("year");
+//     const minMileage = searchParams.get("minMileage");
+//     const maxMileage = searchParams.get("maxMileage");
+
+//     if (make) filters.make = make;
+//     if (model) filters.model = model;
+//     if (year) filters.year = parseInt(year);
+
+//     // Handle mileage range
+//     if (minMileage || maxMileage) {
+//       filters.mileage = {};
+//       if (minMileage) filters.mileage.$gte = parseInt(minMileage);
+//       if (maxMileage) filters.mileage.$lte = parseInt(maxMileage);
+//     }
+
+//     const cars = await Car.find(filters)
+//       .sort({ createdAt: -1 }) // Optional: sort by newest first
+//       .select("-__v"); // Optional: exclude version key
+
+//     return NextResponse.json(cars, { status: 200 });
+//   } catch (error) {
+//     console.error("Error fetching cars:", error);
+//     return NextResponse.json(
+//       { error: `Internal Server Error: ${error}` },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+// First, define an interface for the price and mileage range filters
+interface RangeFilter {
+  $gte?: number;
+  $lte?: number;
+}
+
+// Define the filters interface
+interface CarFilters {
+  make?: string;
+  model?: string;
+  year?: number;
+  price?: RangeFilter;
+  mileage?: RangeFilter;
+}
+
 export async function GET(request: NextRequest) {
   try {
     await connectMongoDB();
     const { searchParams } = new URL(request.url);
-    const filters: Record<string, any> = {};
+    const filters: CarFilters = {};
 
     // Handle price range
     const minPrice = searchParams.get("minPrice");
