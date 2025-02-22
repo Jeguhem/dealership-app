@@ -23,8 +23,17 @@ import {
 } from "@/components/ui/dialog";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { getPublicIdFromUrl } from "@/app/api/cloudinary/delete/route";
 // import { useQueryClient } from "@tanstack/react-query";
+
+function getPublicIdFromUrl(url: string): string {
+  try {
+    const matches = url.match(/\/v\d+\/([^/]+)\./);
+    return matches && matches[1] ? matches[1] : "";
+  } catch (error) {
+    console.error("Error extracting public_id from URL:", error);
+    return "";
+  }
+}
 
 interface CarFormData {
   name: string;
