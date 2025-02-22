@@ -240,12 +240,12 @@ export async function PUT(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectMongoDB();
 
-    const { id } = params;
+    const { id } = await params;
     const updates = await request.json();
 
     // Validate ID format
@@ -292,3 +292,58 @@ export async function PATCH(
     );
   }
 }
+
+// export async function PATCH(
+//   request: NextRequest,
+//   { params }: { params: { id: string } }
+// ) {
+//   try {
+//     await connectMongoDB();
+
+//     const { id } = params;
+//     const updates = await request.json();
+
+//     // Validate ID format
+//     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+//       return NextResponse.json(
+//         { error: "Invalid car ID format" },
+//         { status: 400 }
+//       );
+//     }
+
+//     // Ensure updates.images is valid
+//     if (
+//       !updates.images ||
+//       !Array.isArray(updates.images) ||
+//       updates.images.length === 0
+//     ) {
+//       return NextResponse.json(
+//         { error: "No valid images provided for deletion" },
+//         { status: 400 }
+//       );
+//     }
+
+//     // Remove images using $pull with $in
+//     const updatedCar = await Car.findByIdAndUpdate(
+//       id,
+//       { $pull: { images: { $in: updates.images } } },
+//       { new: true, runValidators: false } // <-- Disable validation here
+//     ).lean();
+
+//     if (!updatedCar) {
+//       return NextResponse.json({ error: "Car not found" }, { status: 404 });
+//     }
+
+//     return NextResponse.json(updatedCar, { status: 200 });
+//   } catch (error: unknown) {
+//     console.error("Error updating car:", error);
+
+//     return NextResponse.json(
+//       {
+//         error: "Failed to update car images",
+//         details: error instanceof Error ? error.message : "Unknown error",
+//       },
+//       { status: 500 }
+//     );
+//   }
+// }
