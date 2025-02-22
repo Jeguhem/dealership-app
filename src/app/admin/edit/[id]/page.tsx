@@ -24,6 +24,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { getPublicIdFromUrl } from "@/app/api/cloudinary/delete/route";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CarFormData {
   name: string;
@@ -64,9 +65,11 @@ const EditCarPage: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
   const router = useRouter();
   const pathname = usePathname(); // Get the full pathname
   const id = pathname.split("/").pop();
+  const queryClient = useQueryClient();
 
   // Fetch existing car data
   useEffect(() => {
@@ -136,42 +139,128 @@ const EditCarPage: React.FC = () => {
     return cloudinaryUrls;
   };
 
+  // const handleDeleteSelectedImages = async () => {
+  //   try {
+  //     // First delete images from Cloudinary
+  //     for (const imageUrl of selectedImages) {
+  //       const publicId = getPublicIdFromUrl(imageUrl);
+
+  //       if (publicId) {
+  //         await fetch("/api/cloudinary/delete", {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ public_id: publicId }),
+  //         });
+  //       }
+  //     }
+
+  //     // Then update the car document to remove the deleted image URLs
+  //     const response = await fetch(`/api/cars/${id}`, {
+  //       method: "PATCH",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ imageUrls: selectedImages }),
+  //     });
+
+  //     if (!response.ok) throw new Error("Failed to update car");
+
+  //     // Update local state
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       images: prev.images.filter((img) => !selectedImages.includes(img)),
+  //     }));
+  //     setSelectedImages([]);
+  //     setIsDeleteDialogOpen(false);
+  //   } catch (error) {
+  //     console.error("Error deleting images:", error);
+  //     setError("Failed to delete images");
+  //   }
+  // };
+
   const handleDeleteSelectedImages = async () => {
     try {
+      // Define types for our arrays
+      const successfullyDeletedImages: string[] = [];
+      const failedImages: string[] = [];
+
       // First delete images from Cloudinary
       for (const imageUrl of selectedImages) {
-        const publicId = getPublicIdFromUrl(imageUrl);
+        try {
+          const publicId = getPublicIdFromUrl(imageUrl);
+          if (!publicId) {
+            failedImages.push(imageUrl);
+            continue;
+          }
 
-        if (publicId) {
-          await fetch("/api/cloudinary/delete", {
+          const response = await fetch("/api/cloudinary/delete", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ public_id: publicId }),
           });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+              error.error || "Failed to delete image from Cloudinary"
+            );
+          }
+
+          successfullyDeletedImages.push(imageUrl);
+        } catch (error) {
+          console.error(`Failed to delete image ${imageUrl}:`, error);
+          failedImages.push(imageUrl);
         }
       }
 
-      // Then update the car document to remove the deleted image URLs
+      if (successfullyDeletedImages.length === 0) {
+        throw new Error("No images were successfully deleted from Cloudinary");
+      }
+
+      // Calculate remaining images
+      const remainingImages = formData.images.filter(
+        (img: string) => !successfullyDeletedImages.includes(img)
+      );
+
+      // Update the car document with remaining images
       const response = await fetch(`/api/cars/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrls: selectedImages }),
+        body: JSON.stringify({ images: successfullyDeletedImages }),
       });
 
-      if (!response.ok) throw new Error("Failed to update car");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update car images");
+      }
 
       // Update local state
       setFormData((prev) => ({
         ...prev,
-        images: prev.images.filter((img) => !selectedImages.includes(img)),
+        images: remainingImages,
       }));
       setSelectedImages([]);
+      setIsDeletingImage(false);
       setIsDeleteDialogOpen(false);
+
+      // Show success/warning message if some images failed
+      if (failedImages.length > 0) {
+        setError(
+          `${successfullyDeletedImages.length} images deleted, ${failedImages.length} failed`
+        );
+      } else {
+        // You might want to add a success toast/message here
+        console.log("All images deleted successfully");
+      }
     } catch (error) {
-      console.error("Error deleting images:", error);
-      setError("Failed to delete images");
+      console.error("Error in delete image operation:", error);
+      setIsDeletingImage(false);
+      setIsDeleteDialogOpen(false);
+      setError(
+        error instanceof Error ? error.message : "Failed to delete images"
+      );
     }
   };
 
@@ -591,8 +680,14 @@ const EditCarPage: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteSelectedImages}>
-              Delete Images
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setIsDeletingImage(true);
+                handleDeleteSelectedImages();
+              }}
+            >
+              {isDeletingImage ? "Deleting..." : "Delete Images"}
             </Button>
           </DialogFooter>
         </DialogContent>

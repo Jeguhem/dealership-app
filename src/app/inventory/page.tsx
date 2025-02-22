@@ -12,6 +12,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import Navbar from "@/components/NavBar";
 
 // Create a QueryClient instance
 const queryClient = new QueryClient();
@@ -382,6 +383,7 @@ const InventoryPage: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Navbar />
       <div className="mx-auto">
         {isFilterOpen && (
           <div

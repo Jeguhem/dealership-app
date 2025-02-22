@@ -24,6 +24,20 @@ const AdminProductDetailsPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // const {
+  //   data: car,
+  //   isLoading,
+  //   error,
+  // } = useQuery({
+  //   queryKey: ["car", id],
+  //   queryFn: async () => {
+  //     if (!id) throw new Error("Invalid car ID");
+  //     const response = await fetch(`/api/cars/${id}`);
+  //     if (!response.ok) throw new Error("Failed to fetch car details");
+  //     return response.json();
+  //   },
+  // });
+
   const {
     data: car,
     isLoading,
@@ -36,6 +50,8 @@ const AdminProductDetailsPage = () => {
       if (!response.ok) throw new Error("Failed to fetch car details");
       return response.json();
     },
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Ensures it refetches when the component mounts
   });
 
   const handleDelete = async () => {
