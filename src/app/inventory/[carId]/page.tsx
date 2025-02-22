@@ -162,7 +162,7 @@ const ProductDetailsPage = () => {
 
               {/* Thumbnail preview - Scrollable on mobile */}
               <div className="flex gap-2 mt-2 overflow-x-auto pb-2 snap-x">
-                {car.images.map((image, index) => (
+                {car.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => selectImage(index)}

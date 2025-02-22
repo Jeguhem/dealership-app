@@ -194,7 +194,7 @@ const AdminProductDetailsPage = () => {
 
               {/* Thumbnails */}
               <div className="grid grid-cols-6 gap-2">
-                {car.images.map((image, index) => (
+                {car.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
