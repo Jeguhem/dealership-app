@@ -270,7 +270,7 @@ export default function Home() {
                 View Inventory
                 <ChevronRight className="ml-2 w-5 h-5" />
               </Link>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-md font-semibold hover:bg-white/10 transition-colors">
+              <button className="border-2 border-white text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-white/10 transition-colors">
                 Book Test Drive
               </button>
             </div>
