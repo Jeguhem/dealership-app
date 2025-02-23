@@ -250,7 +250,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-[100dvh] bg-gradient-to-r from-gray-900 to-black overflow-hidden">
+      <section className="relative px-4 h-[100dvh] bg-gradient-to-r from-gray-900 to-black overflow-hidden">
         <div className="absolute inset-0 bg-black/50" />
         <div className="container mx-auto px-4 h-full flex items-center relative z-10">
           <div className="max-w-2xl space-y-8">
@@ -457,7 +457,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer className="bg-black px-4 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
