@@ -1,5 +1,5 @@
 import Navbar from "@/components/NavBar";
-// import Link from "next/link";
+import Link from "next/link";
 import React from "react";
 
 export default function Home() {
@@ -13,11 +13,11 @@ export default function Home() {
           <p className="text-lg mt-4">
             Explore our wide range of luxury and budget-friendly cars.
           </p>
-          <a href="/inventory">
-            <button className="mt-6 bg-orange-500 text-white py-3 px-6 rounded-lg text-lg">
+          <Link href="/inventory" passHref>
+            <span className="mt-6 bg-orange-500 text-white py-3 px-6 rounded-lg text-lg cursor-pointer inline-block">
               Browse Inventory
-            </button>
-          </a>
+            </span>
+          </Link>
         </div>
       </section>
 
