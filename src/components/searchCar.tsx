@@ -406,7 +406,7 @@ const Combobox: React.FC<ComboboxProps> = ({
         />
         <input
           type="text"
-          className={`w-full min-w-[150px] bg-transparent border-none focus:outline-none 
+          className={`w-full lg:min-w-[150px] min-w-[90px] bg-transparent border-none focus:outline-none 
           ${disabled ? "cursor-not-allowed text-gray-400" : "text-gray-700"}`}
           placeholder={placeholder}
           value={query}

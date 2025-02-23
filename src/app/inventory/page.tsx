@@ -270,7 +270,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   return (
     <div
       className={`
-      fixed min-w-[230px] lg:static inset-y-0 left-0 z-40 min-From w-12 bg-white border-r transform
+      fixed min-w-[230px] md:pt-0 pt-20 lg:static inset-y-0 left-0 z-40 min-From w-12 bg-white border-r transform
       ${isOpen ? "translate-x-0" : "-translate-x-full"}
       lg:transform-none lg:translate-x-0
       transition-transform duration-200 ease-in-out
@@ -419,9 +419,9 @@ const InventoryPage: React.FC = () => {
             <div className="mb-4 sm:mb-6">
               <button
                 onClick={() => setIsFilterOpen(true)}
-                className="lg:hidden p-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+                className="lg:hidden px-2 py-1 rounded-lg mb-3 font-medium items-center border gap-3 flex  border-gray-300 hover:bg-gray-50"
               >
-                <Filter className="w-5 h-5" />
+                Filter <Filter className="w-4 h-4" />
               </button>
               <div className="flex items-center justify-around gap-4">
                 <CarSearch onSearch={handleSearch} />
