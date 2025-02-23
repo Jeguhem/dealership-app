@@ -22,7 +22,7 @@ interface Car {
   _id: string;
   name: string;
   make: string;
-  model: string;
+  carModel: string;
   year: number;
   price: number;
   mileage: number;
@@ -111,7 +111,7 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
 
         <div className="mt-1">
           <h3 className="font-medium text-xs sm:text-sm truncate">
-            {car.make} {car.model}
+            {car.make} {car.carModel}
           </h3>
           <p className="text-xs text-gray-500">{car.year}</p>
         </div>
