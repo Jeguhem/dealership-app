@@ -336,6 +336,12 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <Link
+                href="/inventory"
+                className="bg-gradient-to-r from-gray-900 to-black overflow-hidden text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
+              >
+                View Our Collection
+              </Link>
         </div>
       </section>
 
