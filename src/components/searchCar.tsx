@@ -439,7 +439,7 @@ const Combobox: React.FC<ComboboxProps> = ({
       )}
 
       {isOpen && filteredOptions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200">
+        <div className="absolute z-30 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200">
           <ul className="py-1 max-h-60 overflow-y-auto">
             {filteredOptions.map((option, index) => (
               <li
