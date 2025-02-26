@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Fuel, Settings, Calendar, Gauge, X, Filter } from "lucide-react";
-import Image from "next/image";
+import { X, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
