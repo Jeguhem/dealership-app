@@ -197,85 +197,7 @@
 //   );
 // }
 
-// import Navbar from "@/components/NavBar";
-// import Link from "next/link";
-// import React from "react";
 
-// export default function Home() {
-//   return (
-//     <div>
-//       {/* Navbar */}
-//       <Navbar />
-
-//       {/* Hero Section */}
-//       <section className="flex h-[100dvh] flex-col items-center justify-center text-center py-16 bg-gray-100">
-//         <h1 className="text-4xl font-bold">Find Your Dream Car Today</h1>
-//         <p className="mt-4 text-lg text-gray-600">
-//           Explore our wide range of luxury and budget-friendly cars.
-//         </p>
-//         <Link href="/inventory">
-//           <button className="mt-6 bg-orange-500 text-white py-3 px-6 rounded-lg text-lg">
-//             Browse Inventory
-//           </button>
-//         </Link>
-//       </section>
-
-//       {/* What We Do Section */}
-//       <section className="py-16 text-center">
-//         <h2 className="text-3xl font-bold">What We Do</h2>
-//         <p className="mt-4 text-lg text-gray-600">
-//           We provide high-quality new and used cars at unbeatable prices.
-//         </p>
-//         <div className="mt-6 w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center">
-//           About us illustration
-//         </div>
-//       </section>
-
-//       {/* New Sell Your Car Section */}
-//       <section className="flex flex-col md:flex-row items-center justify-between bg-blue-900 text-white p-8 rounded-lg">
-//         <div className="md:w-1/2">
-//           <h2 className="text-3xl font-bold">Looking to Sell Your Car?</h2>
-//           <p className="mt-4 text-lg">
-//             Get the best value for your car with our hassle-free selling
-//             process. We help you:
-//           </p>
-//           <ul className="mt-4 space-y-2">
-//             <li>✔ Free car valuation and consultation</li>
-//             <li>✔ Fast and secure payment process</li>
-//             <li>✔ Wide network of buyers for quick sales</li>
-//             <li>✔ Smooth documentation and transfer</li>
-//           </ul>
-//           <Link href="/sell-car">
-//             <button className="mt-6 bg-yellow-500 text-white py-3 px-6 rounded-lg text-lg">
-//               Contact Sellers
-//             </button>
-//           </Link>
-//         </div>
-//         <div className="md:w-1/2 mt-6 md:mt-0">
-//           <div className="w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center">
-//             Image Placeholder
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Why Choose Us Section */}
-//       <section className="py-16 text-center">
-//         <h2 className="text-3xl font-bold">Why Choose Us</h2>
-//         <p className="mt-4 text-lg text-gray-600">
-//           Trusted by thousands, we offer the best deals and customer service.
-//         </p>
-//         <div className="mt-6 w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center">
-//           Achievements illustration
-//         </div>
-//       </section>
-
-//       {/* Footer */}
-//       <footer className="py-6 text-center bg-gray-900 text-white">
-//         © 2025 Car Dealership. All rights reserved.
-//       </footer>
-//     </div>
-//   );
-// }
 
 "use client";
 import React, { useState } from "react";
@@ -285,10 +207,13 @@ import {
   Clock,
   Shield,
   DollarSign,
-  Car,
+  // Car,
   PhoneCall,
   MapPin,
   Mail,
+  Twitter,
+  Instagram,
+  Facebook,
 } from "lucide-react";
 import Navbar from "@/components/NavBar";
 import Link from "next/link";
@@ -325,7 +250,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] bg-gradient-to-r from-gray-900 to-black overflow-hidden">
+      <section className="relative px-2 lg:px-4 h-[100dvh] bg-gradient-to-r from-gray-900 to-black overflow-hidden">
         <div className="absolute inset-0 bg-black/50" />
         <div className="container mx-auto px-4 h-full flex items-center relative z-10">
           <div className="max-w-2xl space-y-8">
@@ -340,12 +265,12 @@ export default function Home() {
             <div className="flex space-x-4">
               <Link
                 href="/inventory"
-                className="bg-white text-black px-8 py-4 rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
+                className="bg-white text-black px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
               >
                 View Inventory
                 <ChevronRight className="ml-2 w-5 h-5" />
               </Link>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-md font-semibold hover:bg-white/10 transition-colors">
+              <button className="border-2 border-white text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-white/10 transition-colors">
                 Book Test Drive
               </button>
             </div>
@@ -366,7 +291,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex justify-center mb-8 space-x-4">
+          <div className="flex justify-center mb-8 lg:space-x-4 space-x-3">
             {["all", "suv", "sedan", "sports"].map((tab) => (
               <button
                 key={tab}
@@ -411,6 +336,14 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <div className="flex w-full justify-center mt-6 items-center">
+          <Link
+                href="/inventory"
+                className="bg-gradient-to-r w-fit  from-gray-900 to-black overflow-hidden text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
+              >
+                View Our Collection
+              </Link>
+              </div>
         </div>
       </section>
 
@@ -476,8 +409,8 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-gray-600 mb-6">
-                  "Exceptional service from start to finish. The team went above
-                  and beyond to ensure I found my perfect vehicle."
+                &quot;Exceptional service from start to finish. The team went above
+                  and beyond to ensure I found my perfect vehicle.&quot;
                 </p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-200 rounded-full" />{" "}
@@ -532,7 +465,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer className="bg-black px-2 lg:px-4 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
@@ -572,9 +505,19 @@ export default function Home() {
               <h3 className="text-xl font-bold mb-4">Follow Us</h3>
               <div className="flex space-x-4">
                 {/* Social media icons would go here */}
+                {/* <div className="w-10 h-10 bg-white/10 rounded-full" />
                 <div className="w-10 h-10 bg-white/10 rounded-full" />
-                <div className="w-10 h-10 bg-white/10 rounded-full" />
-                <div className="w-10 h-10 bg-white/10 rounded-full" />
+                <div className="w-10 h-10 bg-white/10 rounded-full" /> */}
+
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                  <Twitter className="text-white w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                  <Instagram className="text-white w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                  <Facebook className="text-white w-5 h-5" />
+                </div>
               </div>
             </div>
           </div>
