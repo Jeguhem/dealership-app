@@ -22,7 +22,7 @@ interface Car {
   _id: string;
   name: string;
   make: string;
-  model: string;
+  carModel: string;
   year: number;
   price: number;
   mileage: number;
@@ -63,88 +63,186 @@ interface FilterPanelProps {
   onYearChange: (year: string | null) => void;
 }
 
-const CarCard: React.FC<CarCardProps> = ({ car }) => {
+const CarCard = ({ car }: CarCardProps) => {
   const router = useRouter();
 
   const handleViewDetails = () => {
     router.push(`/inventory/${car._id}`);
   };
 
-  return (
-    <div className="bg-white border relative rounded-lg shadow-md overflow-hidden">
-      {car.status && (
-        <span
-          className={`
-            absolute top-2 right-2 z-10 px-2 py-1 rounded-full text-xs font-semibold
-            ${
-              car.status === "New"
-                ? "bg-green-100 text-green-800"
-                : car.status === "Sold"
-                ? "bg-red-100 text-red-800"
-                : "bg-gray-100 text-gray-800"
-            }
-          `}
-        >
-          {car.status}
-        </span>
-      )}
+  // Helper function to determine badge color based on status
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "New":
+        return "bg-green-500 text-white";
+      case "Sold":
+        return "bg-red-500 text-white";
+      default:
+        return "bg-blue-500 text-white"; // Available or other status
+    }
+  };
 
-      <div className="relative h-24 sm:h-40 overflow-hidden">
-        <Image
+  return (
+    <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ">
+      {/* Image Container */}
+      <div className="relative h-48 overflow-hidden">
+        <img
           src={
-            Array.isArray(car.images) && car.images.length > 0
+            car.images && car.images.length > 0
               ? car.images[0]
               : "/placeholder.jpg"
           }
-          alt={car.name}
-          width={250}
-          height={150}
-          className="w-full h-full object-cover"
-          unoptimized={false}
+          alt={`${car.make} ${car.carModel}`}
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
+        {car.status && (
+          <div
+            className={`absolute top-3 right-3 py-1 px-3 rounded-full text-xs font-semibold ${getStatusBadgeClass(
+              car.status
+            )}`}
+          >
+            {car.status}
+          </div>
+        )}
       </div>
 
-      <div className="p-2 sm:p-3">
-        <p className="font-bold text-sm sm:text-md text-left">
-          ₦{car.price.toLocaleString()}
-        </p>
+      {/* Car Details */}
+      <div className="p-4">
+        {/* Price */}
+        <div className="mb-2">
+          <p className=" font-semibold text-blue-600">
+            ₦ {car.price.toLocaleString()}
+          </p>
+        </div>
 
-        <div className="mt-1">
-          <h3 className="font-medium text-xs sm:text-sm truncate">
-            {car.make} {car.model}
+        {/* Make, Model and Year */}
+        <div className="mb-3">
+          <h3 className="text-xs md:text-md  font-bold text-gray-800">
+            {car.make} {car.carModel}
           </h3>
-          <p className="text-xs text-gray-500">{car.year}</p>
+          <p className="text-sm text-gray-600">{car.year}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          <div className="flex items-center gap-1">
-            <Gauge size={14} />
-            <span className="text-xs">{car.mileage} Miles</span>
+        {/* Specs */}
+        <div className="flex gap-2 font-medium  mb-4">
+          <div className="flex items-center bg-gray-100 px-1 py-[2px] rounded-sm w-fit  text-xs text-slate-800">
+            {/* <Gauge size={16} className="text-gray-600 pr-1" /> */}
+            {car.mileage} KM
           </div>
-          <div className="flex items-center gap-1">
-            <Fuel size={14} />
-            <span className="text-xs">{car.fuelType}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Settings size={14} />
-            <span className="text-xs">{car.transmission}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Calendar size={14} />
-            <span className="text-xs">{car.year}</span>
+
+          <div className="flex items-center bg-gray-100 px-1 py-[2px] rounded-sm w-fit  text-xs text-slate-800">
+            {car.transmission}
           </div>
         </div>
 
+        {/* View Details Button */}
         <button
           onClick={handleViewDetails}
-          className="block mt-2 w-full py-1 px-2 border border-gray-300 rounded-md text-xs font-medium hover:bg-red-600 hover:text-white transition-colors"
+          className="w-full bg-blue-600 text-xs md:text-sm font-medium hover:bg-blue-700 text-white py-1 rounded-md transition-colors duration-300 flex items-center justify-center"
         >
           View Car Details
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 ml-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
         </button>
       </div>
     </div>
   );
 };
+
+// const CarCard: React.FC<CarCardProps> = ({ car }) => {
+//   const router = useRouter();
+
+//   const handleViewDetails = () => {
+//     router.push(`/inventory/${car._id}`);
+//   };
+
+//   return (
+//     <div className="bg-white border relative rounded-lg shadow-md overflow-hidden">
+//       {car.status && (
+//         <span
+//           className={`
+//             absolute top-2 right-2 z-10 px-2 py-1 rounded-full text-xs font-semibold
+//             ${
+//               car.status === "New"
+//                 ? "bg-green-100 text-green-800"
+//                 : car.status === "Sold"
+//                 ? "bg-red-100 text-red-800"
+//                 : "bg-gray-100 text-gray-800"
+//             }
+//           `}
+//         >
+//           {car.status}
+//         </span>
+//       )}
+
+//       <div className="relative h-24 sm:h-40 overflow-hidden">
+//         <Image
+//           src={
+//             Array.isArray(car.images) && car.images.length > 0
+//               ? car.images[0]
+//               : "/placeholder.jpg"
+//           }
+//           alt={car.name}
+//           width={250}
+//           height={150}
+//           className="w-full h-full object-cover"
+//           unoptimized={false}
+//         />
+//       </div>
+
+//       <div className="p-2 sm:p-3">
+//         <p className="font-bold text-sm sm:text-md text-left">
+//           ₦{car.price.toLocaleString()}
+//         </p>
+
+//         <div className="mt-1">
+//           <h3 className="font-medium text-xs sm:text-sm truncate">
+//             {car.make} {car.model}
+//           </h3>
+//           <p className="text-xs text-gray-500">{car.year}</p>
+//         </div>
+
+//         <div className="grid grid-cols-2 gap-2 mt-2">
+//           <div className="flex items-center gap-1">
+//             <Gauge size={14} />
+//             <span className="text-xs">{car.mileage} Miles</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Fuel size={14} />
+//             <span className="text-xs">{car.fuelType}</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Settings size={14} />
+//             <span className="text-xs">{car.transmission}</span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <Calendar size={14} />
+//             <span className="text-xs">{car.year}</span>
+//           </div>
+//         </div>
+
+//         <button
+//           onClick={handleViewDetails}
+//           className="block mt-2 w-full py-1 px-2 border border-gray-300 rounded-md text-xs font-medium hover:bg-red-600 hover:text-white transition-colors"
+//         >
+//           View Car Details
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   setFilterType,
@@ -155,10 +253,10 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   onPriceChange,
 }) => {
   const presetRanges: PresetRange[] = [
-    { id: 1, label: "Under ₦30M", min: 0, max: 30000000 },
-    { id: 2, label: "₦30M - ₦50M", min: 30000000, max: 50000000 },
-    { id: 3, label: "₦50k - ₦100M", min: 50000000, max: 80000000 },
-    { id: 4, label: "₦100M+", min: 100000000, max: null },
+    { id: 1, label: "Under ₦30m", min: 0, max: 30000000 },
+    { id: 2, label: "₦30m - ₦50m", min: 30000000, max: 50000000 },
+    { id: 3, label: "₦50m - ₦100m", min: 50000000, max: 80000000 },
+    { id: 4, label: "₦100m+", min: 100000000, max: null },
   ];
 
   const handlePresetClick = (range: PresetRange) => {
@@ -437,7 +535,7 @@ const InventoryPage: React.FC = () => {
                 Error loading cars: {error.toString()}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="grid  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {cars.map((car: Car) => (
                   <CarCard key={car._id} car={car} />
                 ))}
