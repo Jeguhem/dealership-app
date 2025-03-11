@@ -67,13 +67,13 @@ function Navbar() {
 
   return (
     <div
-      className={`fixed left-0 top-0 z-50 w-full bg-white shadow-md transition-all duration-300 ease-in-out ${
-        isScrolled ? "py-2" : "py-4"
+      className={`fixed left-0 top-0 z-50 w-full shadow-md transition-all duration-300 ease-in-out ${
+        isScrolled ? "py-2 bg-black/85" : "py-4 bg-black/85"
       }`}
     >
       <div className="flex items-center justify-between px-5 lg:px-7">
         {/* Logo */}
-        <p className="text-[24px] font-semibold text-black/60">Logo</p>
+        <p className="text-[24px] font-semibold text-white">AutoLot</p>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6">
@@ -91,14 +91,18 @@ function Navbar() {
         {/* Mobile Menu Toggle */}
         <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
+            {isOpen ? (
+              <X className="text-white" size={28} />
+            ) : (
+              <Menu className="text-white" size={28} />
+            )}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute left-0 top-16 w-full bg-white shadow-md md:hidden">
+        <div className="absolute left-0 top-16 w-full bg-black/60">
           <div className="flex flex-col items-center space-y-4 py-4">
             <NavLinks />
             <Button className="gap-3 rounded-full bg-slate-700">

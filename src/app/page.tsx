@@ -197,12 +197,10 @@
 //   );
 // }
 
-
-
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
-  ChevronRight,
+  // ChevronRight,
   Star,
   Clock,
   Shield,
@@ -211,141 +209,22 @@ import {
   PhoneCall,
   MapPin,
   Mail,
-  Twitter,
-  Instagram,
-  Facebook,
 } from "lucide-react";
 import Navbar from "@/components/NavBar";
-import Link from "next/link";
+import Hero from "@/components/Hero";
+import FeaturedVehicles from "@/components/FeaturedVehicles";
+import Footer from "@/components/Footer";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("all");
-
-  const featuredCars = [
-    {
-      category: "suv",
-      name: "Range Rover Sport",
-      price: "89,900",
-      year: "2024",
-      mileage: "0",
-    },
-    {
-      category: "sedan",
-      name: "Mercedes S-Class",
-      price: "95,500",
-      year: "2024",
-      mileage: "0",
-    },
-    {
-      category: "sports",
-      name: "Porsche 911",
-      price: "112,000",
-      year: "2024",
-      mileage: "0",
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative px-2 lg:px-4 h-[100dvh] bg-gradient-to-r from-gray-900 to-black overflow-hidden">
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="container mx-auto px-4 h-full flex items-center relative z-10">
-          <div className="max-w-2xl space-y-8">
-            <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
-              Experience Luxury <br />
-              Drive Excellence
-            </h1>
-            <p className="text-xl text-gray-200">
-              Discover our curated collection of premium vehicles, where luxury
-              meets performance.
-            </p>
-            <div className="flex space-x-4">
-              <Link
-                href="/inventory"
-                className="bg-white text-black px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
-              >
-                View Inventory
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Link>
-              <button className="border-2 border-white text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-white/10 transition-colors">
-                Book Test Drive
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* Featured Cars Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Featured Vehicles
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore our selection of premium vehicles, each chosen for its
-              exceptional quality and performance.
-            </p>
-          </div>
-
-          <div className="flex justify-center mb-8 lg:space-x-4 space-x-3">
-            {["all", "suv", "sedan", "sports"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-2 rounded-full ${
-                  activeTab === tab
-                    ? "bg-black text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {featuredCars.map((car, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-              >
-                <div className="h-48 bg-gray-200" />{" "}
-                {/* Car image placeholder */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {car.name}
-                  </h3>
-                  <div className="flex justify-between items-center mt-4">
-                    <span className="text-2xl font-bold text-gray-900">
-                      ${car.price}
-                    </span>
-                    <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800">
-                      Details
-                    </button>
-                  </div>
-                  <div className="mt-4 flex items-center text-sm text-gray-600 space-x-4">
-                    <span>{car.year}</span>
-                    <span>•</span>
-                    <span>{car.mileage} miles</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex w-full justify-center mt-6 items-center">
-          <Link
-                href="/inventory"
-                className="bg-gradient-to-r w-fit  from-gray-900 to-black overflow-hidden text-white px-4 py-2 lg:px-8 lg:py-4 text-[14px] lg:text-[16px] rounded-md font-semibold hover:bg-gray-100 transition-colors flex items-center"
-              >
-                View Our Collection
-              </Link>
-              </div>
-        </div>
-      </section>
+      <FeaturedVehicles />
 
       {/* Services Section */}
       <section className="py-20 bg-black text-white">
@@ -409,8 +288,8 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-gray-600 mb-6">
-                &quot;Exceptional service from start to finish. The team went above
-                  and beyond to ensure I found my perfect vehicle.&quot;
+                  &quot;Exceptional service from start to finish. The team went
+                  above and beyond to ensure I found my perfect vehicle.&quot;
                 </p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-200 rounded-full" />{" "}
@@ -465,67 +344,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black px-2 lg:px-4 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">About Us</h3>
-              <p className="text-gray-400">
-                Leading luxury car dealership with over 20 years of excellence
-                in automotive retail.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/inventory">Inventory</Link>
-                </li>
-                <li>
-                  <Link href="/services">Services</Link>
-                </li>
-                <li>
-                  <Link href="/financing">Financing</Link>
-                </li>
-                <li>
-                  <Link href="/contact">Contact</Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Services</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>New Cars</li>
-                <li>Pre-Owned Vehicles</li>
-                <li>Car Maintenance</li>
-                <li>Auto Financing</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Follow Us</h3>
-              <div className="flex space-x-4">
-                {/* Social media icons would go here */}
-                {/* <div className="w-10 h-10 bg-white/10 rounded-full" />
-                <div className="w-10 h-10 bg-white/10 rounded-full" />
-                <div className="w-10 h-10 bg-white/10 rounded-full" /> */}
-
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <Twitter className="text-white w-5 h-5" />
-                </div>
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <Instagram className="text-white w-5 h-5" />
-                </div>
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <Facebook className="text-white w-5 h-5" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>© 2025 Luxury Auto Dealership. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

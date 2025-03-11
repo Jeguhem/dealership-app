@@ -54,8 +54,8 @@ const NavLinks = () => {
         <a
           key={idx}
           href={link.href}
-          className={`font-medium text-primary-blue hover:text-gray-700 ${
-            pathname === link.href ? "border-b-2 border-primary-red" : ""
+          className={`font-medium text-white hover:text-gray-200 ${
+            pathname === link.href ? "border-b-2 border-yellow-200" : ""
           }`}
         >
           {link.label}
