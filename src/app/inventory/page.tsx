@@ -11,6 +11,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import Image from "next/image";
 // import Navbar from "@/components/NavBar";
 
 // Create a QueryClient instance
@@ -85,7 +86,7 @@ const CarCard = ({ car }: CarCardProps) => {
     <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ">
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
-        <img
+        <Image
           src={
             car.images && car.images.length > 0
               ? car.images[0]
